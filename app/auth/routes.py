@@ -2,7 +2,7 @@ from flask import (render_template, redirect, url_for,
                    request, current_app)
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy import true
-from werkzeug.urls import url_parse
+from urllib.parse import urlparse 
 from flask.helpers import flash
 
 from app import login_manager
@@ -99,7 +99,7 @@ def login():
             # if user.id_estado == 1:
             #     return redirect(url_for('auth.change_password'))
             next_page = request.args.get('next')
-            if not next_page or url_parse(next_page).netloc != '':
+            if not next_page or urlparse(next_page).netloc != '':
                 next_page = url_for('public.index')
             return redirect(next_page)
     return render_template('auth/login_form.html', form=form)
