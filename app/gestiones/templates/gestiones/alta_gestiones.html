@@ -1,0 +1,74 @@
+{% extends "base_template.html" %}
+{% from "_render_elements.html" import render_input %}
+
+{% block title %}
+    Groma | Alta de gestiones
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="offset-md-2 col-md-8">
+        <h1>Nueva gestión</h1>
+        <form action="" method="post" class="form-horizontal" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ render_input(form.titular, '', id="titular", class="form-control", placeholder="Busque el nombre del titular", list="titulares", autocomplete="off" ) }}
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ render_input(form.ubicacion_gestion, '', id="ubicacion_gestion", class="form-control", placeholder="Ingrese la ubicación del inmueble", autocomplete="off") }}
+                    </div>
+                    <div class="form-group">
+                        {{ render_input(form.coordenadas, '', id="coordenadas", class="form-control", placeholder="Ingrese las coordenadas del inmueble", autocomplete="off") }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ render_input(form.id_tipo_bienes, '', id="id_tipo_bienes", class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ render_input(form.fecha_inicio_gestion, '', id="fecha_inicio_gestion", value=hoy.strftime('%Y-%m-%d'), class="form-control", type="date") }}
+                    </div>
+ 
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ render_input(form.fecha_probable_medicion,'', id= "fecha_probable_medicion", value=fecha_probable_medicion_default.strftime('%Y-%m-%d'), class="form-control", type="date"  ) }}
+                    </div>
+                                       
+                    <div class="form-group">
+                        {{ render_input(form.id_tipo_gestion,'', id= "id_tipo_gestion" , class="form-control") }}
+                    </div>
+                   
+                    <div class="row">
+                        <div class="col-xs-4 col-sm-3 col-md-4 col-lg-4">
+                            {{ render_input(form.numero_partido,'', id= "numero_partido" , class="form-control", placeholder="Partido", autocomplete="off") }}
+                        </div>
+                        <div class="col-xs-8 col-sm-9 col-md-8 col-lg-8">
+                            {{ render_input(form.numero_partida,'', id= "numero_partida" , class="form-control", placeholder="Partida", autocomplete="off") }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ render_input(form.nomenclatura, '', id="nomenclatura", class="form-control", placeholder="Ingrese la nomenclatura", autocomplete="off") }}
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ render_input(form.observacion, '', id="observacion", class="form-control", placeholder="Ingrese una observación", autocomplete="off") }}
+            </div>
+
+
+            <datalist id="titulares">
+                {% for titular in clientes %}
+                <option  value="{{ titular.descripcion_nombre}}">
+                {% endfor %}
+            </datalist>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

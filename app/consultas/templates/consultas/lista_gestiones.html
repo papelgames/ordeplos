@@ -1,0 +1,128 @@
+{% extends "base_template.html" %}
+{% from "_render_elements.html" import render_input %}
+
+{% block title %}
+    Groma | Gestiones
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="offset-md-3 col-md-6">
+		<h1>Consulta de Gestiones</h1>
+            <form action="" method="post" enctype="multipart/form-data" novalidate>	
+                {{ form.hidden_tag() }}
+                {{ render_input(form.buscar,'', id= "buscar" , class="form-control", placeholder="Ingrese nombre/razón social o número de gestión" ) }}
+                <button type="submmit" class="btn btn-primary" >Buscar</button>
+            </form>
+    </div>
+</div>
+{% if gestiones.items %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">CLIENTE</th>
+            <th scope="col">TITULAR</th>
+            <th scope="col">UBICACION</th>
+            <th scope="col">DIBUJANTE</th>
+            <th scope="col">TIPO DE GESTION</th>
+            <th scope="col">ACCION</th> 
+        </tr>
+    </thead>
+    
+    <tbody>
+        {% for gestion in gestiones.items %}
+            <tr>
+                <th scope="row">{{ gestion.id }}</th>
+                <td> {{ gestion.cliente.descripcion_nombre }}</td>
+                <td> {{ gestion.titular }} </td>
+                <td> {{ gestion.ubicacion_gestion }}</td>
+                <td> {{ gestion.dibujante.descripcion_nombre }}</td>
+                <td> {{ gestion.tipos_gestiones.descripcion }}</td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Acción
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item"  href="{{ url_for('gestiones.modificacion_gestiones', id_gestion = gestion.id) }}">Modificar gestión</a>
+                        <a class="dropdown-item"  href="{{ url_for('gestiones.alta_cobros_cabecera', id_gestion = gestion.id) }}">Crear presupuesto cobro</a>
+                        <a class="dropdown-item"  href="{{ url_for('gestiones.gestiones_tareas', id_gestion = gestion.id) }}">Tareas</a>
+                        <a class="dropdown-item"  href="{{ url_for('consultas.tareas_pendientes', id_gestion = gestion.id) }}">Tareas pendientes</a>
+                        <a class="dropdown-item"  href="{{ url_for('consultas.cobro', id_gestion = gestion.id) }}">Ver presupuesto cobro</a>
+                        <a class="dropdown-item"  href="{{ url_for('consultas.caratula', id_gestion = gestion.id)}} ">Carátula</a>
+                        <a class="dropdown-item"  href="{{ url_for('consultas.bitacora', id_gestion = gestion.id) }}">Bitácora</a>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation example">
+	<ul class="pagination justify-content-center">
+
+        {%- for page in gestiones.iter_pages() %}
+			{% if page %}
+
+				{% if page != gestiones.page %}
+					<li class="page-item"><a class="page-link" href="{{ url_for('consultas.lista_gestiones', criterio= criterio, page=page) }}">{{ page }}</a>
+				{% else %}
+					<li class="page-item active">
+						<span class="page-link">
+							{{ page }}
+							<span class="sr-only">(current)</span>
+						</span>
+					</li>
+                {% endif %}
+			{% endif %}
+		{%- endfor %}
+	</ul>
+</nav>
+
+
+{% elif gestiones %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">CLIENTE</th>
+            <th scope="col">TITULAR</th>
+            <th scope="col">UBICACION</th>
+            <th scope="col">DIBUJANTE</th>
+            <th scope="col">TIPO DE GESTION</th>
+            <th scope="col">ACCION</th>
+            
+        </tr>
+    </thead>
+    
+    <tbody>
+        <tr>
+            <th scope="row">{{ gestiones.id }}</th>
+            <td> {{ gestiones.cliente.descripcion_nombre }}</td>
+            <td> {{ gestiones.titular }} </td>
+            <td> {{ gestiones.ubicacion_gestion }}</td>
+            <td> {{ gestiones.dibujante.descripcion_nombre }}</td>
+            <td> {{ gestiones.tipos_gestiones.descripcion }}</td>
+            <td>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Acción
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item"  href="{{ url_for('gestiones.modificacion_gestiones', id_gestion = gestiones.id) }}">Modificar gestión</a>
+                    <a class="dropdown-item"  href="{{ url_for('gestiones.alta_cobros_cabecera', id_gestion = gestiones.id) }}">Crear presupuesto cobro</a>
+                    <a class="dropdown-item"  href="{{ url_for('gestiones.gestiones_tareas', id_gestion = gestiones.id) }}">Tareas</a>
+                    <a class="dropdown-item"  href="{{ url_for('consultas.cobro', id_gestion = gestiones.id) }}">Ver presupuesto cobro</a>
+                    <a class="dropdown-item"  href="{{ url_for('consultas.caratula', id_gestion = gestiones.id)}} ">Carátula</a>
+                    <a class="dropdown-item"  href="{{ url_for('consultas.bitacora', id_gestion = gestiones.id)}} ">Bitácora</a>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+{% endif %}
+
+{% endblock %}

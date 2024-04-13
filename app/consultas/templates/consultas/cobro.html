@@ -1,0 +1,39 @@
+{% extends "base_template.html" %}
+{% from "_render_elements.html" import render_input %}
+
+{% block title %}
+    Groma | Cobro
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="offset-md-2 col-md-8">
+        <h1><h1> Cobro gestión: <strong>{{ cobro_individual.id_gestion }}</strong></h1></h1>
+
+            <div class="form-group">
+                <h1> Referencia: <strong>{{ cobro_individual.id }}</strong></h1>
+                <h2>Estado: {{ cobro_individual.estado }}</h2>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Aca estaban las fechas de cobro -->
+                </div>
+                <div class="col-md-6">
+                    <h4>Importe total: {{ cobro_individual.importe_total }}</h4>
+                    <h4>Moneda: {{ cobro_individual.moneda }} </h4>
+                    
+                    
+                </div>
+
+            </div>
+            <a href=" {{ url_for('gestiones.alta_importe_cobro', id_cobro = cobro_individual.id) }} ">
+                <button class="btn btn-primary">Cargar cobro</button>
+            </a> 
+            
+
+    </div>
+</div>
+
+{% endblock %}

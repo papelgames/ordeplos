@@ -1,0 +1,52 @@
+{% extends "base_template.html" %}
+
+{% block title %}
+    Groma | Bitacora
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="offset-md-2 col-md-8">
+        <h3>Cliente: {{ gestion.cliente.descripcion_nombre }} </h3>
+        <h3>Número de gestión: {{ gestion.id }} </h3>
+        <h3>Titular: {{ gestion.titular }} </h3> 
+    </div>
+    <div class="offset-md-2 col-md-8">
+        {% for paso in bitacora_completa %}
+            {% if paso.id_cobro and paso.id_importe_cobro %}
+                <div class="card ml-5"><span class="border border-danger">        
+                    <div class="card-body ">
+                        <h6 class="card-title">Bitacora de cobro - {{paso.usuario_alta}} - {{paso.created.strftime('%d-%m-%Y')}}</h6>
+                        {{ paso.observacion }}
+                    </div>
+            {% elif paso.id_cobro %}
+                <div class="card ml-4"><span class="border border-warning">
+                    <div class="card-body">
+                        <h6 class="card-title">Bitacora de presupuesto - {{paso.usuario_alta}} - {{paso.created.strftime('%d-%m-%Y')}}</h6>
+                        {{ paso.observacion }}
+                    </div>
+            {% elif paso.id_gestion_de_tarea %}
+                <div class="card ml-3"><span class="border border-success">
+                    <div class="card-body">
+                        <h6 class="card-title">Bitacora de tarea - {{paso.usuario_alta}} - {{paso.created.strftime('%d-%m-%Y')}} - {{paso.gestionesdetareas.tareas.descripcion}}</h6>
+                        {{ paso.observacion }}
+                    </div>
+            {% else %}
+                <div class="card"><span class="border border-info">
+                    <div class="card-body">
+                        <h6 class="card-title">Bitacora de gestión - {{paso.usuario_alta}} - {{paso.created.strftime('%d-%m-%Y')}}</h6>
+                        {{ paso.observacion }}
+                    </div>
+            {% endif %}
+                </span>  
+                </div>
+        {% endfor %}
+
+    </div>
+</div> 
+<a href="{{ url_for('gestiones.nuevo_paso', id_gestion = gestion.id) }}" >
+    <button class="btn btn-primary">Nuevo Paso</button>
+</a>
+
+{% endblock %}

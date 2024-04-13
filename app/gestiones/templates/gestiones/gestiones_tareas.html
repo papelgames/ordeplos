@@ -1,0 +1,52 @@
+{% extends "base_template.html" %}
+{% from "_render_elements.html" import render_input %}
+
+{% block title %}
+    Groma | Tareas
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="offset-md-3 col-md-6">
+		<h1>Tareas</h1>
+            <form action="" method="post" enctype="multipart/form-data" novalidate>	
+                {{ form.hidden_tag() }}
+                {{ render_input(form.id_tarea,'', id= "id_tarea" , class="form-control" ) }}
+                <button type="submmit" class="btn btn-primary" >Guardar</button>
+            </form>
+    </div>
+</div>
+{% if gestion %}
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">TAREA</th>
+                <th scope="col">ACCION</th>
+                
+            </tr>
+        </thead>
+              
+        <tbody>
+            {% for tarea in gestion.gestiones_de_tareas %}  
+                <tr>
+                    <th scope="row">{{ tarea.tareas.descripcion }}</th>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Acción
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item"  href="{{ url_for('gestiones.detalle_gdt', id_gestion_de_tarea = tarea.id) }}">Modificar Tarea</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+            
+    </table>
+        
+    
+{% endif %}
+
+{% endblock %}

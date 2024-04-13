@@ -1,0 +1,66 @@
+{% extends "base_template.html" %}
+
+{% block title %}
+    Groma | Caratula
+{% endblock %}
+
+{% block content %}
+<div class="col-12">  
+    <div id="zona_print">
+      <div class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <h1>Juan Manuel Diaz </h1>
+          <p>Mar del plata</p>
+          <p>Buenos Aires</p>
+        
+        </div>
+        <div class="col-md-4">
+          <div id="contenedorQR" >
+            <p style="display: none;" >{{ url_for("gestiones.modificacion_gestiones", id_gestion = gestion.id, _external=True) }} </p>
+          </div>
+        </div>
+      </div>
+    
+      <hr>
+      <div class="col text-center">
+        <h1>Cliente: {{ gestion.cliente.descripcion_nombre }}</h1>
+        <h2>N° de gestion: <strong>{{ gestion.id }}</strong> </h2>
+      </div>
+      <hr>
+    
+      <div class="row mt-3 col text-center">
+        <div class="col-4">
+          <h5>Tipo de gestion: </h5>
+          <p>
+            {{ gestion.tipos_gestiones.descripcion }} 
+          </p>
+        </div>
+        <div class="col-4">
+          
+          <h5>Fecha: {{ gestion.created.strftime('%d-%m-%Y') }}</h5>
+          <h5>Fecha prob. de medición: {{ gestion.fecha_probable_medicion.strftime('%d-%m-%Y') }}</h5>
+        </div>
+        <div class="col-4">
+          <h5>Titular: <strong>{{ gestion.titular }}</strong></h5>
+          <h5>Ubicacion: {{ gestion.ubicacion_gestion }} </h5>       
+        </div>
+      </div>
+      <hr>
+      
+    </div>
+      
+    </div>
+  <a href="javascript:imprSelec('zona_print','Carátula')" >
+    <button class="btn btn-primary">Imprimir</button>
+  </a>  
+  {% if gestion.coordenadas %}
+    <a href="https://www.google.com.ar/maps/place/{{ gestion.coordenadas }}" target="_blank" rel="noopener noreferrer">
+      <button class="btn btn-primary">Ir a mapa</button>
+    </a>
+  {% endif %}
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base_template.html" %}
+{% from "_render_elements.html" import render_input %}
+
+{% block title %}
+    Groma | Alta de tareas por tipo de gestion
+{% endblock %}
+
+{% block content %}
+<div class="col-md-12">
+	<h1>Alta de tareas por tipo de gestion</h1>
+</div>
+<div class="row">
+	
+
+	<div class="col-md-6">
+		<div class="offset-md-3 col-md-6">
+			
+			<form action="" method="post" enctype="multipart/form-data" novalidate>	
+				{{ form.hidden_tag() }}
+				{{ render_input(form.id_tarea,'', id= "id_tarea" , class="form-control", size=10 ) }}
+				<button type="submmit" class="btn btn-primary" >Guardar</button>
+				
+			</form>
+		</div>
+	</div>
+
+	<div class="col-md-6">
+		{% if tareas_por_tipo_gestion %}
+			<div class="offset-md-3 col-md-6">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">ID</th>
+							<th scope="col">NOMBRE</th>
+							<th scope="col">ACCION</th>
+							
+						</tr>
+					</thead>
+					
+					<tbody>
+						{% for tareas_tipo_gestiones in tareas_por_tipo_gestion %}
+							{% for tarea_por_tipo_gestion in tareas_tipo_gestiones.tareas %}
+								<tr>
+									<th scope="row">{{ tarea_por_tipo_gestion.id }}</th>
+									<td> {{ tarea_por_tipo_gestion.descripcion }}</td>
+								
+									<td>
+										<div class="dropdown">
+											<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+												Acción
+										</button>
+										<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+											<a class="dropdown-item"  href="{{ url_for('abms.eliminar_tarea_por_tipo_gestion', id_tarea = tarea_por_tipo_gestion.id, id_tipo_gestion = tareas_por_tipo_gestion[0].id) }}">Anular</a>
+										</div>
+									</td>
+								</tr>
+							{% endfor %}
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% endif %}
+
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base_template.html" %}
+
+{% block title %}
+    Groma | Tareas Pendientes
+{% endblock %}
+
+{% block content %}
+
+{% if tareas_pendientes_por_gestion.items %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">TAREA</th>
+            <th scope="col">CLIENTE</th>
+            <th scope="col">TITULAR</th>
+            <th scope="col">UBICACION</th>
+            <th scope="col">DIBUJANTE</th>
+            <th scope="col">TIPO DE GESTION</th>
+            <th scope="col">FECHA INICIO</th>
+            <th scope="col">ACCION</th> 
+        </tr>
+    </thead>
+    
+    <tbody>
+        {% for tarea_pendiente in tareas_pendientes_por_gestion.items %}
+            <tr>
+                <th scope="row">{{ tarea_pendiente.tareas.descripcion }}</th>
+                <td> {{ tarea_pendiente.gestiones.cliente.descripcion_nombre }}</td>
+                <td> {{ tarea_pendiente.gestiones.titular }} </td>
+                <td> {{ tarea_pendiente.gestiones.ubicacion_gestion }}</td>
+                <td> {{ tarea_pendiente.gestiones.dibujante.descripcion_nombre }}</td>
+                <td> {{ tarea_pendiente.gestiones.tipos_gestiones.descripcion }}</td>
+                <td> {{ tarea_pendiente.fecha_inicio }}</td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Acción
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item"  href="{{ url_for('gestiones.modificacion_gestiones', id_gestion = tarea_pendiente.gestiones.id) }}">Modificar gestión</a>
+                        <a class="dropdown-item"  href="{{ url_for('gestiones.detalle_gdt', id_gestion_de_tarea = tarea_pendiente.id) }}">Modificar Tarea</a>
+                        <a class="dropdown-item"  href="{{ url_for('gestiones.gestiones_tareas', id_gestion = tarea_pendiente.gestiones.id) }}">Tareas</a>
+                        <a class="dropdown-item"  href="{{ url_for('consultas.caratula', id_gestion = tarea_pendiente.gestiones.id)}} ">Carátula</a>
+                        <a class="dropdown-item"  href="{{ url_for('consultas.bitacora', id_gestion = tarea_pendiente.gestiones.id) }}">Bitácora</a>    
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation example">
+	<ul class="pagination justify-content-center">
+
+        {%- for page in tareas_pendientes_por_gestion.iter_pages() %}
+			{% if page %}
+
+				{% if page != tareas_pendientes_por_gestion.page %}
+					<li class="page-item"><a class="page-link" href="{{ url_for('consultas.tareas_pendientes', page=page) }}">{{ page }}</a>
+				{% else %}
+					<li class="page-item active">
+						<span class="page-link">
+							{{ page }}
+							<span class="sr-only">(current)</span>
+						</span>
+					</li>
+                {% endif %}
+			{% endif %}
+		{%- endfor %}
+	</ul>
+</nav>
+
+
+{% endif %}
+
+{% endblock %}

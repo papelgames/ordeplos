@@ -1,0 +1,62 @@
+{% extends "base_template.html" %}
+{% from "_render_elements.html" import render_input %}
+
+{% block title %}
+    Groma | Detalle de tarea
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+	<div class="offset-md-2 col-md-8">
+		<h1>Detalle de tarea</h1> 
+
+		<h1>Tarea: {{ gestion_de_tarea.tareas.descripcion }}</h1>
+        
+		<form action="" method="post" class = "form-horizontal" enctype="multipart/form-data" novalidate="true">	
+			{{ form.hidden_tag() }}
+			{% if gestion_de_tarea.fecha_inicio %}
+				{{ render_input(form.fecha_inicio,'', id= "fecha_inicio", value = gestion_de_tarea.fecha_inicio.strftime('%Y-%m-%d'),  class="form-control" ) }}
+			{% else %}
+				{{ render_input(form.fecha_inicio,'', id= "fecha_inicio", value = hoy.strftime('%Y-%m-%d'),  class="form-control" ) }}
+			{% endif %}
+			
+			{% if gestion_de_tarea.fecha_fin %}
+				{{ render_input(form.fecha_fin,'', id= "fecha_fin", value = gestion_de_tarea.fecha_fin.strftime('%Y-%m-%d'),  class="form-control" ) }}
+			{% elif not gestion_de_tarea.fecha_fin and gestion_de_tarea.fecha_inicio %}
+				{{ render_input(form.fecha_fin,'', id= "fecha_fin", value = hoy.strftime('%Y-%m-%d'), class="form-control" ) }}
+			{% else %}
+				{{ render_input(form.fecha_fin,'', id= "fecha_fin",  class="form-control" ) }}
+			{% endif %}
+			
+			{% if gestion.id_dibujante and carga_dibujante_valor %}
+				{{ render_input(form.id_dibujante,'', id= "id_dibujante" , value = gestion.id_dibujante ~'|'~ gestion.dibujante.descripcion_nombre ~'|'~ gestion.dibujante.cuit, class="form-control", placeholder = "Seleccione un dibujante", list="dibujantes", autocomplete="off", onkeypress="return evitarCaracter(event, '|');"  ) }}
+			{% elif carga_dibujante_valor %}
+				{{ render_input(form.id_dibujante,'', id= "id_dibujante", class="form-control" , placeholder = "Seleccione un dibujante", list="dibujantes", autocomplete="off", onkeypress="return evitarCaracter(event, '|');"  ) }}
+			{% endif %}
+			{{ render_input(form.observacion,'', id= "observacion" , class="form-control", placeholder = "Observaciones"  ) }}
+			<button type="submmit" class="btn btn-primary">Guardar</button>
+			
+		</form>
+            
+		<div class="offset-md-2 col-md-8">
+			{% for observacion in observaciones_gestion_tareas %}
+				<div class="card">
+						<div class="card-body ">
+							<h6 class="card-title">Bitacora de {{observacion.gestionesdetareas.tareas.descripcion}} - {{observacion.usuario_alta}} - {{observacion.created.strftime('%d-%m-%Y')}}</h6>
+							{{ observacion.observacion }}
+						</div>
+				</div>
+				
+			{% endfor %}
+	
+		</div>
+		<datalist id="dibujantes">
+			{% for dibujante in dibujantes %}
+			<option  value="{{[dibujante.persona.id, dibujante.persona.descripcion_nombre, dibujante.persona.cuit]|join('|')}}">
+			{% endfor %}
+		</datalist>
+	</div>
+</div>
+
+{% endblock %}

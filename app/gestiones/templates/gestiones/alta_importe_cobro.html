@@ -1,0 +1,68 @@
+{% extends "base_template.html" %}
+{% from "_render_elements.html" import render_input %}
+
+{% block title %}
+    Groma | Carga de importes
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+	<div class="offset-md-2 col-md-8">
+		<h1>Importes cobrados</h1> 
+        
+		<form action="" method="post" class = "form-horizontal" enctype="multipart/form-data" novalidate>	
+			{{ form.hidden_tag() }}
+			{{ render_input(form.fecha_cobro,'', id= "fecha_cobro",value=hoy.strftime('%Y-%m-%d'), class="form-control" ) }}
+			{{ render_input(form.importe,'', id= "importe" , class="form-control", placeholder = "Importe" ) }}
+			{{ render_input(form.tipo_cambio,'', id= "tipo_cambio" , class="form-control", placeholder="Tipo de cambio") }}
+			{{ render_input(form.moneda,'', id= "moneda" , class="form-control" ) }}
+			{{ render_input(form.medio_cobro,'', id= "medio_cobro" , class="form-control" ) }}
+			{{ render_input(form.observacion,'', id= "observacion" , class="form-control", placeholder = "Observaciones"  ) }}
+			
+			<button type="submmit" class="btn btn-primary">Guardar</button>
+			
+		</form>
+            
+	</div>
+	{% if cobros %}
+	<div class="offset-md-1 col-md-9">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Fecha de cobro</th>
+					<th scope="col">MEDIO DE COBRO</th>
+					<th scope="col">MONEDA</th>
+					<th scope="col">TIPO DE CAMBIO</th>
+					<th scope="col">IMPORTE</th>
+					<th scope="col">ACCION</th>
+				</tr>
+			</thead>
+				
+			<tbody>
+				{% for cobro in cobros %}  
+					<tr>
+						<th scope="row">{{ cobro.fecha_cobro.strftime('%d-%m-%y') }}</th>
+						<th scope="row">{{ cobro.medio_cobro }}</th>
+						<th scope="row">{{ cobro.moneda }}</th>
+						<th scope="row">{{ cobro.tipo_cambio }}</th>
+						<th scope="row">{{ cobro.importe }}</th>
+						<td>
+							<div class="dropdown">
+								<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									Acción
+							</button>
+							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<a class="dropdown-item"  href="#">Modificar Cobro</a>
+								<a class="dropdown-item"  href="#">Eliminar Cobro</a>
+							</div>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>	
+	{% endif %}
+</div>
+
+{% endblock %}

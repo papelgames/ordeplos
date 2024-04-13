@@ -1,0 +1,26 @@
+{% extends "base_template.html" %}
+{% from "_render_elements.html" import render_input %}
+
+{% block title %}
+    Groma | Carga de cobro
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+	<div class="offset-md-2 col-md-8">
+		<h1>Cobro</h1> 
+        
+		<form action="" method="post" class = "form-horizontal" enctype="multipart/form-data" novalidate>	
+			{{ form.hidden_tag() }}
+			{{ render_input(form.importe_total,'', id= "importe_total" , class="form-control", placeholder = "Importe" ) }}
+			{{ render_input(form.moneda,'', id= "moneda" , class="form-control" ) }}
+			{{ render_input(form.observacion,'', id= "observacion" , class="form-control", placeholder = "Observaciones"  ) }}
+			<button type="submmit" class="btn btn-primary">Guardar</button>
+			
+		</form>
+            
+	</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base_template.html" %}
+{% from "_render_elements.html" import render_input %}
+
+{% block title %}
+    Groma | Modificación de Tareas
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="offset-md-3 col-md-6">
+		<h1>Modificación de tareas</h1>
+
+		<form action="" method="post" enctype="multipart/form-data" novalidate>	
+            {{ form.hidden_tag() }}
+			{{ render_input(form.descripcion,'', id= "descripcion" ,value = tarea.descripcion ,class="form-control", placeholder="Nombre de la tarea" ) }}
+			{{ render_input(form.correlativa_de, tarea.correlativa_de, id= "correlativa_de" , class="form-control" ) }}
+			{{ render_input(form.dias_para_vencimiento,'', id= "dias_para_vencimiento" ,value = tarea.dias_para_vencimiento , class="form-control" ) }}
+			{{ render_input(form.fecha_unica,'', id= "fecha_unica" , class="form-control" ) }}
+			{{ render_input(form.carga_dibujante,'', id= "carga_dibujante" ,class="form-control" ) }}
+			{{ render_input(form.activo,'', id= "activo" , class="form-control" ) }}
+			<button type="submmit" class="btn btn-primary" >Guardar</button>
+			
+		</form>
+	</div>
+</div>
+
+{% endblock %}
