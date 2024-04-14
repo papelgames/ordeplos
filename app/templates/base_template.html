@@ -9,8 +9,8 @@
         {% endblock %}</title>
     {% block styles %}
         <link rel="shortcut icon" href="{{ url_for('static', filename='imgs/favicon.png') }}">
-        <link rel="stylesheet" href={{ url_for('static', filename='css/bootstrap/bootstrap.min.css') }}>
-        <link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }}>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% endblock %}
 </head>
 <body>
@@ -51,7 +51,6 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="nav-link" href="{{ url_for('abms.alta_tipo_gestion') }}">Tipos de gestion<span class="sr-only">(current)</span></a>
-                            <a class="nav-link" href="{{ url_for('abms.alta_tipo_bien') }}">Tipos de bien<span class="sr-only">(current)</span></a>
                             <a class="nav-link" href="{{ url_for('abms.alta_permiso') }}">Permisos<span class="sr-only">(current)</span></a>
                             <a class="nav-link" href="{{ url_for('abms.crear_roles') }}">Roles<span class="sr-only">(current)</span></a>
                             <a class="nav-link" href="{{ url_for('abms.alta_tarea') }}">Tareas<span class="sr-only">(current)</span></a>

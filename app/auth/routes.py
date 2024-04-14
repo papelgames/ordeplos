@@ -29,8 +29,7 @@ def show_signup_form():
         correo_electronico = form.correo_electronico.data
         new_password = 'groma' + str(strftime('%d%m%y%H%m%s', gmtime()))
         is_admin = form.is_admin.data
-        es_dibujante = form.es_dibujante.data
-
+        
         # Comprobamos que no hay ya un usuario con ese nombre de usuario
         user = Users.get_by_username(username)
         check_correo = Personas.get_by_correo(correo_electronico)
@@ -43,8 +42,7 @@ def show_signup_form():
             # Creamos el usuario y la persona relacionada al usuario y lo guardamos
             user = Users(username=username, 
                         id_estado=1, 
-                        is_admin=is_admin,
-                        es_dibujante=es_dibujante
+                        is_admin=is_admin
                         )
             
             user.set_password(new_password)
@@ -207,8 +205,7 @@ def firstin():
         
     else:
         # Creamos el usuario admin
-        user = Users(name="Admin",
-                    username=username, 
+        user = Users(username=username, 
                     id_estado=1, 
                     is_admin=True
                     )

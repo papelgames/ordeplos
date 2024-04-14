@@ -14,9 +14,8 @@ class Users(db.Model, UserMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)
+    password = db.Column(db.String(162), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
-    es_dibujante = db.Column(db.Boolean, default=False)
     id_estado = db.Column(db.Integer)
     persona = db.relationship('Personas', backref='users', uselist=False)
     # permisos_usuario = db.relationship('PermisosPorUsuarios', backref='users', uselist=True, lazy=True)
@@ -48,11 +47,4 @@ class Users(db.Model, UserMixin):
     @staticmethod
     def get_all():
         return Users.query.all()
-
-    @staticmethod
-    def get_by_es_dibujante():
-        return Users.query.filter_by(es_dibujante=1).all()    
-    
-    @staticmethod
-    def get_dibujante_persona(id_persona):
-        return Users.query.filter(Users.es_dibujante == True, Users.persona.has(Personas.id == id_persona)).all()
+   

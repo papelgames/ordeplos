@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 
 from app.auth.decorators import admin_required, not_initial_status
 from app.auth.models import Users
-from app.models import Personas, TiposGestiones, TiposBienes, Permisos, Roles, Tareas
+from app.models import Personas, TiposGestiones, Permisos, Roles, Tareas
 from . import abms_bp
 from .forms import AltaPersonasForm, TiposForm, PermisosForm, RolesForm, TareasForm, TareasPorTipoDeGestionForm, PermisosSelectForm
 
@@ -115,23 +115,23 @@ def alta_tipo_gestion():
 
     return render_template("abms/alta_tipo_gestion.html", form=form, tipos=tipos)
 
-@abms_bp.route("/abms/altatipobienes/", methods = ['GET', 'POST'])
-@login_required
-@admin_required
-@not_initial_status
-def alta_tipo_bien():
-    form = TiposForm()
-    tipos = TiposBienes.get_all()
-    if form.validate_on_submit():
-        descripcion = form.tipo.data
+# @abms_bp.route("/abms/altatipobienes/", methods = ['GET', 'POST'])
+# @login_required
+# @admin_required
+# @not_initial_status
+# def alta_tipo_bien():
+#     form = TiposForm()
+#     tipos = TiposBienes.get_all()
+#     if form.validate_on_submit():
+#         descripcion = form.tipo.data
 
-        tipo_bien = TiposBienes(descripcion=descripcion)
+#         tipo_bien = TiposBienes(descripcion=descripcion)
 
-        tipo_bien.save()
-        flash("Nuevo tipo de bien creado", "alert-success")
-        return redirect(url_for('abms.alta_tipo_bien'))
+#         tipo_bien.save()
+#         flash("Nuevo tipo de bien creado", "alert-success")
+#         return redirect(url_for('abms.alta_tipo_bien'))
 
-    return render_template("abms/alta_tipo_bien.html", form=form, tipos=tipos)
+#     return render_template("abms/alta_tipo_bien.html", form=form, tipos=tipos)
 
 @abms_bp.route("/abms/altapermisos/", methods = ['GET', 'POST'])
 @login_required

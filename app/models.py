@@ -28,6 +28,8 @@ class Personas (Base):
     cuit = db.Column(db.String(11), nullable = False)
     correo_electronico = db.Column(db.String(256))
     telefono = db.Column(db.String(256))
+    genero = db.Column(db.String(9))
+    fecha_nacimiento = db.Column(db.DateTime)
     tipo_persona = db.Column(db.String(50))
     id_estado = db.Column(db.Integer)
     nota = db.Column(db.String(256))
@@ -67,26 +69,20 @@ class Personas (Base):
 class Gestiones (Base):
     __tablename__ = "gestiones"
     id_cliente = db.Column(db.Integer, db.ForeignKey('personas.id'))
-    titular = db.Column(db.String(50), nullable = False)
-    ubicacion_gestion= db.Column(db.String(50))
-    coordenadas=db.Column(db.String(50))
+    origen = db.Column(db.String(80), nullable = False)
+    edad_en_gestion = db.Column(db.Integer)
     fecha_inicio_gestion = db.Column(db.DateTime)
-    fecha_probable_medicion = db.Column(db.DateTime)
-    fecha_medicion = db.Column(db.DateTime)
+    fecha_probable_inicio_tramite = db.Column(db.DateTime)
     fecha_fin_gestion = db.Column(db.DateTime)
-    id_dibujante = db.Column(db.Integer, db.ForeignKey('personas.id'))
+    cita = db.Column(db.Boolean)
+    fecha_cita = db.Column(db.DateTime)
     id_analista_responsable = db.Column(db.Integer)
     id_tipo_gestion = db.Column(db.Integer, db.ForeignKey('tiposgestiones.id'))
-    id_tipo_bienes = db.Column(db.Integer, db.ForeignKey('tiposbienes.id'))
     id_estado = db.Column(db.Integer)
-    numero_partido= db.Column(db.String(4))
-    numero_partida= db.Column(db.String(8))
-    nomenclatura = db.Column(db.String(50))
     usuario_alta = db.Column(db.String(256))
     usuario_modificacion = db.Column(db.String(256))
     observaciones = db.relationship('Observaciones', backref='gestiones', uselist=True, lazy=True)
     gestiones_de_tareas = db.relationship('GestionesDeTareas', backref='gestiones', uselist=True, lazy=True)
-    dibujante = db.relationship('Personas', backref='persona_dibujante', foreign_keys='Gestiones.id_dibujante', uselist=False, lazy=True)
     cliente = db.relationship('Personas', backref='persona_cliente', foreign_keys='Gestiones.id_cliente', uselist=False, lazy=True)
     
     def save(self):
@@ -230,20 +226,6 @@ class TiposGestiones(Base):
             db.session.add(self)
         db.session.commit()
 
-class TiposBienes(Base):
-    __tablename__ = "tiposbienes"
-    descripcion = db.Column(db.String(50))
-    gestiones = db.relationship('Gestiones', backref='tipos_bienes', uselist=False)
-    
-    @staticmethod
-    def get_all():
-        return TiposBienes.query.all()
-        
-    def save(self):
-        if not self.id:
-            db.session.add(self)
-        db.session.commit()
-
 class PermisosPorUsuarios(Base):
     __tablename__ = "permisosporusuarios"
     id_permiso = db.Column(db.Integer, db.ForeignKey('permisos.id'))
@@ -349,7 +331,6 @@ class Tareas(Base):
     usuario_alta = db.Column(db.String(256))
     usuario_modificacion = db.Column(db.String(256))
     fecha_unica = db.Column(db.Boolean)
-    carga_dibujante = db.Column(db.Boolean)
     activo = db.Column(db.Boolean)
     tipos_gestiones = db.relationship('TiposGestiones', secondary='tiposgestionesportareas', back_populates='tareas')
     gestiones_de_tareas = db.relationship('GestionesDeTareas', backref='tareas', uselist=False, lazy=True)

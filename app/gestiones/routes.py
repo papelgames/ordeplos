@@ -9,7 +9,7 @@ from flask_login import login_required, current_user
 
 from app.auth.decorators import admin_required, not_initial_status
 from app.auth.models import Users
-from app.models import Personas, TiposGestiones, TiposBienes, Gestiones, Observaciones, Cobros, ImportesCobros, Tareas, GestionesDeTareas
+from app.models import Personas, TiposGestiones, Gestiones, Observaciones, Cobros, ImportesCobros, Tareas, GestionesDeTareas
 from . import gestiones_bp 
 from .forms import AltaGestionesForm, BusquedaForm, CobrosForm, ImportesCobrosForm, PasoForm, GestionesTareasForm, DetallesGdTForm, DetallesGdTDibujanteForm
 
@@ -31,13 +31,13 @@ def tipo_gestion_select():
     return select_tipo_gestion
 
 #creo una tupla para usar en el campo select del form que quiera que necesite los tipo de bienes
-def tipo_bien_select():
-    tipos_bienes = TiposBienes.get_all()
-    select_tipo_bien =[( '','Seleccionar tipo de bien')]
-    for rs in tipos_bienes:
-        sub_select_tipo_bien = (str(rs.id), rs.descripcion)
-        select_tipo_bien.append(sub_select_tipo_bien)
-    return select_tipo_bien
+# def tipo_bien_select():
+#     tipos_bienes = TiposBienes.get_all()
+#     select_tipo_bien =[( '','Seleccionar tipo de bien')]
+#     for rs in tipos_bienes:
+#         sub_select_tipo_bien = (str(rs.id), rs.descripcion)
+#         select_tipo_bien.append(sub_select_tipo_bien)
+#     return select_tipo_bien
 
 #creo una tupla para usar en el campo select del form que quiera que necesite las tareas
 def tareas_select(id_gestion):
@@ -57,7 +57,7 @@ def alta_gestiones(id_cliente):
     form = AltaGestionesForm()                                                                                                                   
     clientes = Personas.get_all()
     form.id_tipo_gestion.choices = tipo_gestion_select()
-    form.id_tipo_bienes.choices = tipo_bien_select()
+    #form.id_tipo_bienes.choices = tipo_bien_select()
     hoy = datetime.today()
     q_dias_para_medicion = current_app.config['DIAS_MEDICION']
     fecha_probable_medicion_default= hoy + timedelta(days=q_dias_para_medicion)
@@ -222,7 +222,7 @@ def modificacion_gestiones(id_gestion):
     form = AltaGestionesForm(obj=gestion)                                                                                                                   
     clientes = Personas.get_all()
     form.id_tipo_gestion.choices = tipo_gestion_select()
-    form.id_tipo_bienes.choices = tipo_bien_select()
+    #form.id_tipo_bienes.choices = tipo_bien_select()
     
     if form.validate_on_submit():
         form.populate_obj(gestion)  # Actualizar la gestión con los datos del formulario
