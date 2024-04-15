@@ -2,7 +2,7 @@
 {% from "_render_elements.html" import render_input %}
 
 {% block title %}
-    Groma | Gestiones
+    OrdepLos | Gestiones
 {% endblock %}
 
 {% block content %}
@@ -22,9 +22,7 @@
         <tr>
             <th scope="col">ID</th>
             <th scope="col">CLIENTE</th>
-            <th scope="col">TITULAR</th>
-            <th scope="col">UBICACION</th>
-            <th scope="col">DIBUJANTE</th>
+            <th scope="col">ORIGEN</th>
             <th scope="col">TIPO DE GESTION</th>
             <th scope="col">ACCION</th> 
         </tr>
@@ -34,10 +32,8 @@
         {% for gestion in gestiones.items %}
             <tr>
                 <th scope="row">{{ gestion.id }}</th>
-                <td> {{ gestion.cliente.descripcion_nombre }}</td>
-                <td> {{ gestion.titular }} </td>
-                <td> {{ gestion.ubicacion_gestion }}</td>
-                <td> {{ gestion.dibujante.descripcion_nombre }}</td>
+                <td> {{ gestion.personas.descripcion_nombre }}</td>
+                <td> {{ gestion.origen }} </td>
                 <td> {{ gestion.tipos_gestiones.descripcion }}</td>
                 <td>
                     <div class="dropdown">
@@ -88,22 +84,17 @@
         <tr>
             <th scope="col">ID</th>
             <th scope="col">CLIENTE</th>
-            <th scope="col">TITULAR</th>
-            <th scope="col">UBICACION</th>
-            <th scope="col">DIBUJANTE</th>
+            <th scope="col">ORIGEN</th>
             <th scope="col">TIPO DE GESTION</th>
-            <th scope="col">ACCION</th>
-            
+            <th scope="col">ACCION</th>  
         </tr>
     </thead>
     
     <tbody>
         <tr>
             <th scope="row">{{ gestiones.id }}</th>
-            <td> {{ gestiones.cliente.descripcion_nombre }}</td>
-            <td> {{ gestiones.titular }} </td>
-            <td> {{ gestiones.ubicacion_gestion }}</td>
-            <td> {{ gestiones.dibujante.descripcion_nombre }}</td>
+            <td> {{ gestiones.personas.descripcion_nombre }}</td>
+            <td> {{ gestiones.origen }} </td>
             <td> {{ gestiones.tipos_gestiones.descripcion }}</td>
             <td>
                 <div class="dropdown">

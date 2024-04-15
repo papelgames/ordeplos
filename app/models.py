@@ -26,6 +26,7 @@ class Personas (Base):
     __tablename__ = "personas"
     descripcion_nombre = db.Column(db.String(50), nullable = False)
     cuit = db.Column(db.String(11), nullable = False)
+    dni = db.Column(db.String(8), nullable = False)
     correo_electronico = db.Column(db.String(256))
     telefono = db.Column(db.String(256))
     genero = db.Column(db.String(9))
@@ -36,6 +37,8 @@ class Personas (Base):
     usuario_alta = db.Column(db.String(256))
     usuario_modificacion = db.Column(db.String(256))
     id_usuario = db.Column(db.Integer, db.ForeignKey('users.id'))
+    gestiones = db.relationship('Gestiones', backref='personas', uselist=True, lazy=True)
+
     
     def save(self):
         if not self.id:
@@ -83,7 +86,7 @@ class Gestiones (Base):
     usuario_modificacion = db.Column(db.String(256))
     observaciones = db.relationship('Observaciones', backref='gestiones', uselist=True, lazy=True)
     gestiones_de_tareas = db.relationship('GestionesDeTareas', backref='gestiones', uselist=True, lazy=True)
-    cliente = db.relationship('Personas', backref='persona_cliente', foreign_keys='Gestiones.id_cliente', uselist=False, lazy=True)
+    #cliente = db.relationship('Personas', backref='persona_cliente', foreign_keys='Gestiones.id_cliente', uselist=False, lazy=True)
     
     def save(self):
         if not self.id:

@@ -1,7 +1,7 @@
 {% extends "base_template.html" %}
 
 {% block title %}
-    Groma | Caratula
+    OrdepLos | Caratula
 {% endblock %}
 
 {% block content %}
@@ -10,8 +10,8 @@
       <div class="container">
       <div class="row">
         <div class="col-md-8">
-          <h1>Juan Manuel Diaz </h1>
-          <p>Mar del plata</p>
+          <h1>Dra. Patricia Sara Díaz </h1>
+          <p>La plata</p>
           <p>Buenos Aires</p>
         
         </div>
@@ -24,7 +24,7 @@
     
       <hr>
       <div class="col text-center">
-        <h1>Cliente: {{ gestion.cliente.descripcion_nombre }}</h1>
+        <h1>Cliente: {{ gestion.personas.descripcion_nombre }}</h1>
         <h2>N° de gestion: <strong>{{ gestion.id }}</strong> </h2>
       </div>
       <hr>
@@ -39,11 +39,11 @@
         <div class="col-4">
           
           <h5>Fecha: {{ gestion.created.strftime('%d-%m-%Y') }}</h5>
-          <h5>Fecha prob. de medición: {{ gestion.fecha_probable_medicion.strftime('%d-%m-%Y') }}</h5>
+          <h5>Fecha cita: {{ gestion.fecha_cita.strftime('%d-%m-%Y') }}</h5>
         </div>
         <div class="col-4">
-          <h5>Titular: <strong>{{ gestion.titular }}</strong></h5>
-          <h5>Ubicacion: {{ gestion.ubicacion_gestion }} </h5>       
+          <h5>Origen: <strong>{{ gestion.origen }}</strong></h5>
+                 
         </div>
       </div>
       <hr>
@@ -54,11 +54,6 @@
   <a href="javascript:imprSelec('zona_print','Carátula')" >
     <button class="btn btn-primary">Imprimir</button>
   </a>  
-  {% if gestion.coordenadas %}
-    <a href="https://www.google.com.ar/maps/place/{{ gestion.coordenadas }}" target="_blank" rel="noopener noreferrer">
-      <button class="btn btn-primary">Ir a mapa</button>
-    </a>
-  {% endif %}
 </div>
 
 

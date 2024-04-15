@@ -11,7 +11,7 @@ from app.auth.decorators import admin_required, not_initial_status
 from app.auth.models import Users
 from app.models import Personas, TiposGestiones, Gestiones, Observaciones, Cobros, ImportesCobros, Tareas, GestionesDeTareas
 from . import gestiones_bp 
-from .forms import AltaGestionesForm, BusquedaForm, CobrosForm, ImportesCobrosForm, PasoForm, GestionesTareasForm, DetallesGdTForm, DetallesGdTDibujanteForm
+from .forms import AltaGestionesForm,AltaGestionesPersonasForm, BusquedaForm, CobrosForm, ImportesCobrosForm, PasoForm, GestionesTareasForm, DetallesGdTForm, DetallesGdTDibujanteForm
 
 from app.common.mail import send_email
 
@@ -48,66 +48,113 @@ def tareas_select(id_gestion):
         select_tareas.append(sub_select_tareas)
     return select_tareas
 
-@gestiones_bp.route("/gestiones/altagestiones/<int:id_cliente>", methods = ['GET', 'POST'])
+@gestiones_bp.route("/gestiones/altagestiones/", methods = ['GET', 'POST'])
 @login_required
 @not_initial_status
-def alta_gestiones(id_cliente):
-    if not id_cliente:
-        return redirect(url_for('gestiones.gestiones'))
-    form = AltaGestionesForm()                                                                                                                   
+def alta_gestiones():
+    id_cliente = request.args.get('id_cliente','')
     clientes = Personas.get_all()
-    form.id_tipo_gestion.choices = tipo_gestion_select()
-    #form.id_tipo_bienes.choices = tipo_bien_select()
+    
     hoy = datetime.today()
-    q_dias_para_medicion = current_app.config['DIAS_MEDICION']
-    fecha_probable_medicion_default= hoy + timedelta(days=q_dias_para_medicion)
 
-    if form.validate_on_submit():
-        titular = form.titular.data
-        ubicacion_gestion = form.ubicacion_gestion.data 
-        coordenadas = form.coordenadas.data
-        id_tipo_bienes = form.id_tipo_bienes.data
-        fecha_inicio_gestion = form.fecha_inicio_gestion.data
-        fecha_probable_medicion = form.fecha_probable_medicion.data
-        id_tipo_gestion = form.id_tipo_gestion.data
-        numero_partido = form.numero_partido.data
-        numero_partida = form.numero_partida.data
-        nomenclatura = form.nomenclatura.data
-        observacion = form.observacion.data
-
-        nueva_gestion = Gestiones(id_cliente = id_cliente,
-                                titular = titular,
-                                ubicacion_gestion = ubicacion_gestion,
-                                coordenadas= coordenadas, 
-                                id_tipo_bienes = id_tipo_bienes,
-                                fecha_inicio_gestion = fecha_inicio_gestion,
-                                fecha_probable_medicion = fecha_probable_medicion,
-                                id_tipo_gestion = id_tipo_gestion,
-                                numero_partido = numero_partido,
-                                numero_partida = numero_partida,
-                                nomenclatura = nomenclatura,
-                                usuario_alta = current_user.username
-                                )
-        observacion_gestion = Observaciones(
-            observacion = observacion,
-            usuario_alta = current_user.username
-
-        )
-
-        if observacion:
-            nueva_gestion.observaciones.append(observacion_gestion)
+    if not id_cliente:
+        con_persona = False
+        form = AltaGestionesPersonasForm()                                                                                                                   
+        form.id_tipo_gestion.choices = tipo_gestion_select()
         
-        tareas_por_tipo_gestion= TiposGestiones.get_first_by_id(id_tipo_gestion)
-        for tarea_por_tipo_gestion in tareas_por_tipo_gestion.tareas:
-            nueva_gestion_de_tarea = GestionesDeTareas(id_tarea = tarea_por_tipo_gestion.id,
-                                                       usuario_alta = current_user.username,
-                                                       )
-            nueva_gestion.gestiones_de_tareas.append(nueva_gestion_de_tarea)
-        nueva_gestion.save()
+        if form.validate_on_submit():
+            descripcion_nombre = form.descripcion_nombre.data
+            genero = form.genero.data
+            tipo_persona = form.tipo_persona.data
+            correo_electronico = form.correo_electronico.data
+            telefono = form.telefono.data
+            dni = form.dni.data
+            cuit = form.cuit.data
+            origen = form.origen.data
+            fecha_inicio_gestion = form.fecha_inicio_gestion.data
+            id_tipo_gestion = form.id_tipo_gestion.data
+            fecha_cita = form.fecha_cita.data
+            cita = form.cita.data
+            observacion = form.observacion.data
 
-        flash("Se ha creado la gestion correctamente.", "alert-success")
-        return redirect(url_for('consultas.caratula', id_gestion = nueva_gestion.id))
-    return render_template("gestiones/alta_gestiones.html", form = form, clientes = clientes, hoy=hoy, fecha_probable_medicion_default=fecha_probable_medicion_default)
+            nuevo_cliente = Personas(descripcion_nombre=descripcion_nombre,
+                                    genero = genero,
+                                    tipo_persona=tipo_persona,
+                                    correo_electronico=correo_electronico,
+                                    telefono=telefono,
+                                    dni=dni,
+                                    cuit=cuit)
+
+            nueva_gestion = Gestiones(origen = origen,
+                                    fecha_inicio_gestion = fecha_inicio_gestion,
+                                    id_tipo_gestion = id_tipo_gestion,
+                                    fecha_cita  = fecha_cita,
+                                    cita = cita,
+                                    usuario_alta = current_user.username
+                                    )
+            observacion_gestion = Observaciones(
+                observacion = observacion,
+                usuario_alta = current_user.username
+
+            )
+            #nueva_gestion.personas.append(nuevo_cliente)
+            if observacion:
+                #nueva_gestion.observaciones.append(observacion_gestion)
+                nueva_gestion.observaciones.append(observacion_gestion)            
+            tareas_por_tipo_gestion= TiposGestiones.get_first_by_id(id_tipo_gestion)
+            for tarea_por_tipo_gestion in tareas_por_tipo_gestion.tareas:
+                nueva_gestion_de_tarea = GestionesDeTareas(id_tarea = tarea_por_tipo_gestion.id,
+                                                        usuario_alta = current_user.username,
+                                                        )
+                #nueva_gestion.gestiones_de_tareas.append(nueva_gestion_de_tarea)
+                nueva_gestion.gestiones_de_tareas.append(nueva_gestion_de_tarea)
+            nuevo_cliente.gestiones.append(nueva_gestion)
+            #nueva_gestion.save()
+            nuevo_cliente.save()
+            flash("Se ha creado la gestion correctamente.", "alert-success")
+            return redirect(url_for('consultas.caratula', id_gestion = nueva_gestion.id))
+        #return redirect(url_for('gestiones.gestiones'))
+    else:
+        con_persona = True
+        form = AltaGestionesForm()                                                                                                                   
+        form.id_tipo_gestion.choices = tipo_gestion_select()
+    
+        if form.validate_on_submit():
+            origen = form.origen.data
+            fecha_inicio_gestion = form.fecha_inicio_gestion.data
+            id_tipo_gestion = form.id_tipo_gestion.data
+            fecha_cita = form.fecha_cita.data
+            cita = form.cita.data
+            observacion = form.observacion.data
+
+            nueva_gestion = Gestiones(id_cliente = id_cliente,
+                                    origen = origen,
+                                    fecha_inicio_gestion = fecha_inicio_gestion,
+                                    id_tipo_gestion = id_tipo_gestion,
+                                    fecha_cita  = fecha_cita,
+                                    cita = cita,
+                                    usuario_alta = current_user.username
+                                    )
+            observacion_gestion = Observaciones(
+                observacion = observacion,
+                usuario_alta = current_user.username
+
+            )
+
+            if observacion:
+                nueva_gestion.observaciones.append(observacion_gestion)
+            
+            tareas_por_tipo_gestion= TiposGestiones.get_first_by_id(id_tipo_gestion)
+            for tarea_por_tipo_gestion in tareas_por_tipo_gestion.tareas:
+                nueva_gestion_de_tarea = GestionesDeTareas(id_tarea = tarea_por_tipo_gestion.id,
+                                                        usuario_alta = current_user.username,
+                                                        )
+                nueva_gestion.gestiones_de_tareas.append(nueva_gestion_de_tarea)
+            nueva_gestion.save()
+
+            flash("Se ha creado la gestion correctamente.", "alert-success")
+            return redirect(url_for('consultas.caratula', id_gestion = nueva_gestion.id))
+    return render_template("gestiones/alta_gestiones.html", form = form, clientes = clientes, hoy=hoy, con_persona=con_persona)
 
 @gestiones_bp.route("/gestiones/gestiones/<criterio>", methods = ['GET', 'POST'])
 @gestiones_bp.route("/gestiones/gestiones/", methods = ['GET', 'POST'])
@@ -123,6 +170,10 @@ def gestiones(criterio = ""):
         return redirect(url_for("gestiones.gestiones", criterio = buscar))
     if criterio.isdigit() == True:
         lista_de_personas = Personas.get_by_cuit(criterio)
+        if lista_de_personas:
+            return redirect(url_for('gestiones.alta_gestiones', id_cliente = lista_de_personas.id))
+        else:
+            return redirect(url_for('gestiones.alta_gestiones', id_cliente = None))
     elif criterio == "":
         pass
     else:
