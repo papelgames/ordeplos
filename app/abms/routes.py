@@ -9,9 +9,9 @@ from werkzeug.utils import secure_filename
 
 from app.auth.decorators import admin_required, not_initial_status
 from app.auth.models import Users
-from app.models import Personas, TiposGestiones, Permisos, Roles, Tareas
+from app.models import Personas, TiposGestiones, Permisos, Roles, Tareas, Estados
 from . import abms_bp
-from .forms import AltaPersonasForm, TiposForm, PermisosForm, RolesForm, TareasForm, TareasPorTipoDeGestionForm, PermisosSelectForm
+from .forms import AltaPersonasForm, TiposForm, PermisosForm, RolesForm, TareasForm, TareasPorTipoDeGestionForm, PermisosSelectForm, EstadosForm
 
 #from app.common.mail import send_email
 from time import strftime, gmtime
@@ -115,23 +115,6 @@ def alta_tipo_gestion():
 
     return render_template("abms/alta_tipo_gestion.html", form=form, tipos=tipos)
 
-# @abms_bp.route("/abms/altatipobienes/", methods = ['GET', 'POST'])
-# @login_required
-# @admin_required
-# @not_initial_status
-# def alta_tipo_bien():
-#     form = TiposForm()
-#     tipos = TiposBienes.get_all()
-#     if form.validate_on_submit():
-#         descripcion = form.tipo.data
-
-#         tipo_bien = TiposBienes(descripcion=descripcion)
-
-#         tipo_bien.save()
-#         flash("Nuevo tipo de bien creado", "alert-success")
-#         return redirect(url_for('abms.alta_tipo_bien'))
-
-#     return render_template("abms/alta_tipo_bien.html", form=form, tipos=tipos)
 
 @abms_bp.route("/abms/altapermisos/", methods = ['GET', 'POST'])
 @login_required
@@ -319,3 +302,32 @@ def eliminar_tarea_por_tipo_gestion():
        
     flash ('Tarea eliminada correctamente del tipo de gestion', 'alert-success')
     return redirect(url_for('abms.alta_tareas_por_tipo_gestion', id_tipo_gestion = id_tipo_gestion))
+
+
+@abms_bp.route("/abms/altaestados/", methods = ['GET', 'POST'])
+@login_required
+@admin_required
+@not_initial_status
+def alta_estados():
+    form = EstadosForm()
+    
+    if form.validate_on_submit():
+        clave = form.clave.data
+        descripcion = form.descripcion.data
+        tabla = form.tabla.data
+        inicial = form.inicial.data
+        final = form.final.data
+        
+        estado = Estados(clave=clave,
+                         descripcion=descripcion,
+                         tabla=tabla,
+                         inicial=inicial,
+                         final=final,
+                         usuario_alta=current_user.username)
+        
+        estado.save()
+        flash("Nuevo estado creado", "alert-success")
+        return redirect(url_for('abms.alta_estados'))
+    #falta paginar tareas
+    estados = Estados.get_all()    
+    return render_template("abms/alta_estados.html", form=form, estados=estados)

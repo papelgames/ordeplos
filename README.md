@@ -50,8 +50,3 @@ insert into parametros (descripcion, tabla, tipo_parametro) values ("Vencido","e
 insert into parametros (descripcion, tabla, tipo_parametro) values ("Anulado","estado_presupuesto","3");
 insert into parametros (descripcion, tabla, tipo_parametro) values ("Iniciado","estado_presupuesto","4");
 
-## Instalación de redis server (sistema debian, ubuntu o derivados)
-sudo apt install redis-server 
-
-## Iniciar worker para que comiencen las colas
-rq worker aicrag-tareas

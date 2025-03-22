@@ -5,7 +5,7 @@ from itertools import product
 from types import ClassMethodDescriptorType
 from typing import Text
 
-from slugify import slugify
+#from slugify import slugify
 from sqlalchemy import func, or_, alias, not_
 from sqlalchemy.orm import aliased
 from sqlalchemy.exc import IntegrityError
@@ -32,7 +32,7 @@ class Personas (Base):
     genero = db.Column(db.String(9))
     fecha_nacimiento = db.Column(db.DateTime)
     tipo_persona = db.Column(db.String(50))
-    id_estado = db.Column(db.Integer)
+    id_estado = db.Column(db.Integer, db.ForeignKey('estados.id')) #revisar integridad en bdd
     nota = db.Column(db.String(256))
     usuario_alta = db.Column(db.String(256))
     usuario_modificacion = db.Column(db.String(256))
@@ -191,7 +191,6 @@ class Observaciones (Base):
     def get_all_by_id_gestion_de_tarea(id_gestion_de_tarea):
         return Observaciones.query.filter_by(id_gestion_de_tarea = id_gestion_de_tarea).all()
 
-
 class Estados(Base):
     __tablename__ = "estados"
     clave = db.Column(db.Integer)
@@ -199,11 +198,24 @@ class Estados(Base):
     tabla = db.Column(db.String(50))
     inicial = db.Column(db.Boolean)
     final = db.Column(db.Boolean)
-
+    usuario_alta = db.Column(db.String(256))
+    usuario_modificacion = db.Column(db.String(256))
+    persona = db.relationship('Personas', backref='estado_personas', uselist=True)
+    user = db.relationship('Users', backref='estado_users', uselist=True)
+   
     def save(self):
         if not self.id:
             db.session.add(self)
         db.session.commit()
+
+    @staticmethod
+    def get_all():
+        return Estados.query.all()
+    
+    @staticmethod
+    def get_first_by_clave_tabla(clave, tabla):
+        return Estados.query.filter_by(clave = clave, tabla = tabla).first()
+
 
 class TiposGestiones(Base):
     __tablename__ = "tiposgestiones"
