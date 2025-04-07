@@ -40,13 +40,13 @@
                 <td> {{ persona.tipo_persona }}</td>
                 <td>
                     <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
                             Acción
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item"  href="{{ url_for('abms.actualizacion_persona', id_persona = persona.id ) }}">Modificar</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item"  href="{{ url_for('abms.actualizacion_persona', id_persona = persona.id ) }}">Modificar</a></li>
                         <a class="dropdown-item"  href="#">Seleccionar</a>
-                    </div>
+                    </ul>
                 </td>
             </tr>
         {% endfor %}

@@ -32,14 +32,14 @@ class Personas (Base):
     genero = db.Column(db.String(9))
     fecha_nacimiento = db.Column(db.DateTime)
     tipo_persona = db.Column(db.String(50))
-    id_estado = db.Column(db.Integer, db.ForeignKey('estados.id')) #revisar integridad en bdd
+    id_estado = db.Column(db.Integer, db.ForeignKey('estados.id')) 
     nota = db.Column(db.String(256))
     usuario_alta = db.Column(db.String(256))
     usuario_modificacion = db.Column(db.String(256))
     id_usuario = db.Column(db.Integer, db.ForeignKey('users.id'))
-    gestiones = db.relationship('Gestiones', backref='personas', uselist=True, lazy=True)
+    titular_gestion = db.relationship('Gestiones', backref='personas', uselist=True, lazy=True)
+    personas_en_gestiones = db.relationship('Gestiones', secondary='personasengestiones', back_populates='gestiones_en_personas')
 
-    
     def save(self):
         if not self.id:
             db.session.add(self)
@@ -68,10 +68,14 @@ class Personas (Base):
             .filter(Personas.descripcion_nombre.contains(descripcion_))\
             .paginate(page=page, per_page=per_page, error_out=False)
 
-
+class PersonasEnGestiones (Base):
+    __tablename__ = "personasengestiones"
+    id_persona = db.Column(db.Integer, db.ForeignKey('personas.id')) 
+    id_gestion = db.Column(db.Integer, db.ForeignKey('gestiones.id'))
+    
 class Gestiones (Base):
     __tablename__ = "gestiones"
-    id_cliente = db.Column(db.Integer, db.ForeignKey('personas.id'))
+    id_persona = db.Column(db.Integer, db.ForeignKey('personas.id')) #cliente persona principal
     origen = db.Column(db.String(80), nullable = False)
     edad_en_gestion = db.Column(db.Integer)
     fecha_inicio_gestion = db.Column(db.DateTime)
@@ -86,8 +90,8 @@ class Gestiones (Base):
     usuario_modificacion = db.Column(db.String(256))
     observaciones = db.relationship('Observaciones', backref='gestiones', uselist=True, lazy=True)
     gestiones_de_tareas = db.relationship('GestionesDeTareas', backref='gestiones', uselist=True, lazy=True)
-    #cliente = db.relationship('Personas', backref='persona_cliente', foreign_keys='Gestiones.id_cliente', uselist=False, lazy=True)
-    
+    gestiones_en_personas = db.relationship('Personas', secondary='personasengestiones', back_populates='personas_en_gestiones')
+   
     def save(self):
         if not self.id:
             db.session.add(self)
@@ -294,6 +298,10 @@ class Permisos(Base):
     def save(self):
         if not self.id:
             db.session.add(self)
+        db.session.commit()
+    
+    def save_masivo(self, lista):
+        db.session.bulk_save_objects(lista)
         db.session.commit()
     
     @staticmethod

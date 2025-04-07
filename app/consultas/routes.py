@@ -19,11 +19,12 @@ def control_vencimiento (fecha):
     if fecha < datetime.now():
         return "VENCIDO"
 
-@consultas_bp.route("/consultas/consultapersonas/<criterio>", methods = ['GET', 'POST'])
 @consultas_bp.route("/consultas/consultapersonas/", methods = ['GET', 'POST'])
 @login_required
 @not_initial_status
-def consulta_personas(criterio = ""):
+def consulta_personas():
+    criterio = request.args.get('criterio','')
+
     form = BusquedaForm()
     lista_de_personas = []
     page = int(request.args.get('page', 1))
@@ -42,11 +43,12 @@ def consulta_personas(criterio = ""):
 
     return render_template("consultas/consulta_personas.html", form = form, criterio = criterio, lista_de_personas= lista_de_personas )
 
-@consultas_bp.route("/consultas/listagestiones/<criterio>", methods = ['GET', 'POST'])
 @consultas_bp.route("/consultas/listagestiones/", methods = ['GET', 'POST'])
 @login_required
 @not_initial_status
-def lista_gestiones(criterio = ""):
+def lista_gestiones():
+    criterio = request.args.get('criterio','')
+
     form = BusquedaForm()
     
     page = int(request.args.get('page', 1))
@@ -80,21 +82,25 @@ def lista_gestiones(criterio = ""):
     return render_template("consultas/lista_gestiones.html", form = form, criterio = criterio, gestiones = gestiones )
 
 
-@consultas_bp.route("/consultas/cobro/<id_gestion>")
+@consultas_bp.route("/consultas/cobro")
 @login_required
 @admin_required
 @not_initial_status
-def cobro(id_gestion):
+def cobro():
+    id_gestion = request.args.get('id_gestion','')
+
     cobro_individual = Cobros.get_all_by_id_gestion(id_gestion)
     if cobro_individual:
         return render_template("consultas/cobro.html", cobro_individual = cobro_individual)
     flash("La gestión no tiene dado de alta un presupuesto","alert-warning")
     return redirect(url_for("consultas.lista_gestiones", criterio = id_gestion))
 
-@consultas_bp.route("/consultas/caratula/<id_gestion>")
+@consultas_bp.route("/consultas/caratula/")
 @login_required
 @not_initial_status
-def caratula(id_gestion):
+def caratula():
+    id_gestion = request.args.get('id_gestion','')
+
     gestion = Gestiones.get_by_id(id_gestion)
     return render_template("consultas/caratula.html", gestion = gestion)
     

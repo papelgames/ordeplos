@@ -18,7 +18,7 @@
             <a href="{{ url_for('abms.alta_persona')}}"></br>
                 <button class="btn btn-primary">Crear un nuevo cliente</button>
             </a> 
-        
+         
     </div>
 </div>
 {% if lista_de_personas.items %}
@@ -43,16 +43,16 @@
                 <td> {{ persona.correo_electronico }}</td>
                 <td> {{ persona.tipo_persona }}</td>
                 <td>
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Acción
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        Acción
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item"  href="{{ url_for('gestiones.alta_gestiones', id_cliente = persona.id) }}">Nueva gestion</a>
-                        <a class="dropdown-item"  href="{{ url_for('consultas.lista_gestiones', cuit = persona.cuit) }}">Ver gestiones</a>
-                        <a class="dropdown-item"  href="#">Seleccionar</a>
-                    </div>
-                </td>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item"  href="{{ url_for('gestiones.alta_gestiones', id_cliente = persona.id) }}">Nueva gestion</a></li>
+                        <li><a class="dropdown-item"  href="{{ url_for('consultas.lista_gestiones', cuit = persona.cuit) }}">Ver gestiones</a></li>
+                    </ul>
+                </div>
+                 </td>
             </tr>
         {% endfor %}
     </tbody>

@@ -42,11 +42,11 @@
                       <span>⮟</span>
                   </a>
                   <div class="collapse" id="menu2">
-                      <a href="{{ url_for('abms.alta_permiso') }}" class="list-group-item list-group-item-action ms-3">Permisos</a>
-                      <a href="{{ url_for('abms.crear_roles') }}" class="list-group-item list-group-item-action ms-3">Roles</a>
-                      <a href="{{ url_for('abms.alta_estados') }}" class="list-group-item list-group-item-action ms-3">Estados</a>
-                      <a href="{{ url_for('abms.alta_tarea') }}" class="list-group-item list-group-item-action ms-3">Tareas</a>
-                      <a href="{{ url_for('abms.alta_tipo_gestion') }}" class="list-group-item list-group-item-action ms-3">Tipos de gestion</a>
+                      <a href="{{ url_for('admin.alta_permiso') }}" class="list-group-item list-group-item-action ms-3">Permisos</a>
+                      <a href="{{ url_for('admin.crear_roles') }}" class="list-group-item list-group-item-action ms-3">Roles</a>
+                      <a href="{{ url_for('admin.alta_estados') }}" class="list-group-item list-group-item-action ms-3">Estados</a>
+                      <a href="{{ url_for('admin.alta_tarea') }}" class="list-group-item list-group-item-action ms-3">Tareas</a>
+                      <a href="{{ url_for('admin.alta_tipo_gestion') }}" class="list-group-item list-group-item-action ms-3">Tipos de gestion</a>
                   </div>
               {% endif %}
               <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#menu4" aria-expanded="false">
@@ -55,9 +55,8 @@
               </a>
               <div class="collapse" id="menu4">
                   <a href="{{ url_for('consultas.consulta_personas') }}" class="list-group-item list-group-item-action ms-3">Consulta de personas</a>
-                  <a class="dropdown-item" href="{{ url_for('consultas.consulta_personas') }}">Consulta de personas</a>
-                  <a class="dropdown-item" href="{{ url_for('consultas.lista_gestiones') }}">Consulta de gestiones</a>
-                  <a class="dropdown-item" href="{{ url_for('consultas.tareas_pendientes') }}">Tareas pendientes</a>
+                  <a href="{{ url_for('consultas.lista_gestiones') }}" class="list-group-item list-group-item-action ms-3">Consulta de gestiones</a>
+                  <a href="{{ url_for('consultas.tareas_pendientes') }}" class="list-group-item list-group-item-action ms-3">Tareas pendientes</a>
                 </div>
               <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="collapse" data-bs-target="#menu5" aria-expanded="false">
                   GESTIONES

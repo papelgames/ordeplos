@@ -22,7 +22,7 @@ class AltaGestionesForm(FlaskForm):
     
 class AltaGestionesPersonasForm(AltaGestionesForm):
     descripcion_nombre = StringField("Nombre/Razón Social", validators=[DataRequired('Debe cargar el nombre o la razón social' )])
-    genero = SelectField('Genero', choices =[( '','Seleccionar genero'),( "M",'Masculino'),( "F",'Femenino')], coerce = str, default = None, validators=[DataRequired('Seleccione genero')])
+    genero = SelectField('Genero', choices =[( '','Seleccionar genero'),( "M",'Masculino'),( "F",'Femenino'),( "X",'No Binario'),( "E",'Empresa/Persona Jurídica' )], coerce = str, default = None, validators=[DataRequired('Seleccione genero')])
     tipo_persona = SelectField('Tipo de persona', choices =[( '','Seleccionar tipo de persona'),( "fisica",'Persona Física'),( "juridica",'Persona Jurídica')], coerce = str, default = None, validators=[DataRequired('Seleccione tipo de persona')])
     correo_electronico = StringField('Correo electrónico', validators=[Email()])
     telefono = StringField('Telefono')

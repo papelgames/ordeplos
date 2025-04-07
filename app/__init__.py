@@ -52,9 +52,6 @@ def create_app(settings_module):
     from .consultas import consultas_bp
     app.register_blueprint(consultas_bp)
 
-    from .abms import abms_bp
-    app.register_blueprint(abms_bp)
-
     from .gestiones import gestiones_bp
     app.register_blueprint(gestiones_bp)
 

@@ -2,24 +2,24 @@
 {% from "_render_elements.html" import render_input %}
 
 {% block title %}
-    Groma | Alta de tipos de bienes
+    Ordeplos | Alta de tipos de gestiones
 {% endblock %}
 
 {% block content %}
 <div class="row">
 	<div class="offset-md-3 col-md-6">
-		<h1>Alta de tipos de bienes</h1>
+		<h1>Alta de tipos de gestiones</h1>
 
 		<form action="" method="post" enctype="multipart/form-data" novalidate>	
             {{ form.hidden_tag() }}
-			{{ render_input(form.id_permiso,'', id= "id_permiso" , class="form-control") }}
-			<button type="submmit" class="btn btn-primary" >Asignar</button>
+			{{ render_input(form.tipo,'', id= "tipo" , class="form-control", placeholder="Tipo de gestion" ) }}
+			<button type="submmit" class="btn btn-primary" >Guardar</button>
 			
 		</form>
 	</div>
 
 </div>
-{% if permisos_en_rol %}
+{% if tipos %}
 	<div class="offset-md-3 col-md-6">
 		<table class="table table-striped">
 			<thead>
@@ -32,10 +32,10 @@
 			</thead>
 			
 			<tbody>
-				{% for permiso in permisos_en_rol.permisos %}
+				{% for tipo in tipos %}
 					<tr>
-						<th scope="row">{{ permiso.id }}</th>
-						<td> {{ permiso.descripcion }}</td>
+						<th scope="row">{{ tipo.id }}</th>
+						<td> {{ tipo.descripcion }}</td>
 					
 						<td>
 							<div class="dropdown">
@@ -43,7 +43,7 @@
 									Acción
 							</button>
 							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-								<a class="dropdown-item"  href="#">Asignar permisos</a>
+								<a class="dropdown-item"  href="{{ url_for('abms.alta_tareas_por_tipo_gestion', id_tipo_gestion = tipo.id) }}">Cargar tareas</a>
 							</div>
 						</td>
 					</tr>
