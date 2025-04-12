@@ -32,7 +32,7 @@
 							<th>{{ permiso.id }}</th>
 							<td> {{ permiso.descripcion }}</td>
 							<td>
-								<a href="{{ url_for('abms.eliminar_permiso', id_permiso = permiso.id) }}">
+								<a href="{{ url_for('admin.eliminar_permiso', id_permiso = permiso.id) }}">
 									<button class="btn btn-sm btn-danger">Eliminar</button>
 								</a>
 							</td>

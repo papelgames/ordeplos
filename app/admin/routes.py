@@ -17,9 +17,18 @@ from app.common.funciones import listar_endpoints
 logger = logging.getLogger(__name__)
 
 #creo una tupla para usar en el campo select del form que quiera que necesite los permisos
-def permisos_select():
-    permisos = Permisos.get_all()
-    select_permisos =[( '','Seleccionar permiso')]
+def permisos_select(user_id):
+    permisos = Permisos.get_permisos_no_relacionadas_personas(user_id)
+    select_permisos =[]
+    for rs in permisos:
+        sub_select_permisos = (str(rs.id), rs.descripcion)
+        select_permisos.append(sub_select_permisos)
+    return select_permisos
+
+#creo una tupla para usar en el campo select del form que quiera que necesite los permisos
+def permisos_en_roles_select(rol_id):
+    permisos = Permisos.get_permisos_no_relacionadas_roles(rol_id)
+    select_permisos =[]
     for rs in permisos:
         sub_select_permisos = (str(rs.id), rs.descripcion)
         select_permisos.append(sub_select_permisos)
@@ -69,11 +78,13 @@ def list_users():
     return render_template("admin/users.html", users=users)
 
 
-@admin_bp.route("/admin/user/<int:user_id>/", methods=['GET', 'POST'])
+@admin_bp.route("/admin/user/", methods=['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
-def update_user_form(user_id):
+def update_user_form():
+    user_id = request.args.get('user_id','')
+    
     # Aquí entra para actualizar un usuario existente
     user = Users.get_by_id(user_id)
     if user is None:
@@ -93,13 +104,14 @@ def update_user_form(user_id):
     return render_template("admin/user_form.html", form=form, user=user)
 
 
-@admin_bp.route("/admin/user/delete/<int:user_id>/", methods=['POST', ])
+@admin_bp.route("/admin/user/delete/", methods=['POST', ])
 @login_required
 @admin_required
 @not_initial_status
-def delete_user(user_id):
-    logger.info(f'Se va a eliminar al usuario {user_id}')
+def delete_user():
+    user_id = request.args.get('user_id','')
     user = Users.get_by_id(user_id)
+    logger.info(f'Se va a eliminar al usuario {user_id}')
     if user is None:
         logger.info(f'El usuario {user_id} no existe')
         abort(404)
@@ -107,15 +119,16 @@ def delete_user(user_id):
     logger.info(f'El usuario {user_id} ha sido eliminado')
     return redirect(url_for('admin.list_users'))
 
-@admin_bp.route("/admin/asignacionpermisos/<int:user_id>/", methods=['GET', 'POST'])
+@admin_bp.route("/admin/asignacionpermisos/", methods=['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
-def asignacion_permisos(user_id):
+def asignacion_permisos():
+    user_id = request.args.get('user_id','')
     # Aquí entra para actualizar un usuario existente
     user = Users.get_by_id(user_id)
     form = PermisosUserForm()
-    form.id_permiso.choices = permisos_select()
+    form.id_permiso.choices = permisos_select(user_id)
     
     if form.validate_on_submit():
         permiso = Permisos.get_by_id(form.id_permiso.data)
@@ -124,19 +137,18 @@ def asignacion_permisos(user_id):
                 flash ('El usuario ya tiene el permiso', 'alert-warning')
                 return redirect(url_for('admin.asignacion_permisos', user_id = user_id))
         user.permisos.append(permiso)
-
         user.save()
         
         flash ('Permiso asignado correctamente', 'alert-success')
         return redirect(url_for('admin.asignacion_permisos', user_id = user_id))
     return render_template("admin/permisos_usuarios.html", form=form, user=user)
 
-
-@admin_bp.route("/admin/asignacionroles/<int:user_id>/", methods=['GET', 'POST'])
+@admin_bp.route("/admin/asignacionroles/", methods=['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
-def asignacion_roles(user_id):
+def asignacion_roles():
+    user_id = request.args.get('user_id','')
     # Aquí entra para actualizar un usuario existente
     user = Users.get_by_id(user_id)
     form = RolesUserForm()
@@ -175,7 +187,7 @@ def eliminar_permiso_usuario():
     flash ('Permiso eliminado correctamente', 'alert-success')
     return redirect(url_for('admin.asignacion_permisos', user_id = user_id))
 
-@admin_bp.route("/abms/altapersonas/", methods = ['GET', 'POST'])
+@admin_bp.route("/admin/altapersonas/", methods = ['GET', 'POST'])
 @login_required
 @not_initial_status
 @nocache
@@ -200,9 +212,9 @@ def alta_persona():
         persona.save()
         flash("Se ha creado la persona correctamente.", "alert-success")
         return redirect(url_for('consultas.consulta_personas'))
-    return render_template("abms/datos_persona.html", form = form)
+    return render_template("admin/datos_persona.html", form = form)
 
-@admin_bp.route("/abms/actualizacionpersona/", methods = ['GET', 'POST'])
+@admin_bp.route("/admin/actualizacionpersona/", methods = ['GET', 'POST'])
 @login_required
 @not_initial_status
 def actualizacion_persona():
@@ -218,9 +230,9 @@ def actualizacion_persona():
     for campo in list(request.form.items())[1:]:
         data_campo = getattr(form,campo[0]).data
         setattr(persona,campo[0], data_campo)
-    return render_template("abms/datos_persona.html", form=form, persona = persona)
+    return render_template("admin/datos_persona.html", form=form, persona = persona)
 
-@admin_bp.route("/abms/altatipogestiones/", methods = ['GET', 'POST'])
+@admin_bp.route("/admin/altatipogestiones/", methods = ['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -234,11 +246,11 @@ def alta_tipo_gestion():
 
         tipo_gestion.save()
         flash("Nuevo tipo de gestión creada", "alert-success")
-        return redirect(url_for('abms.alta_tipo_gestion'))
+        return redirect(url_for('admin.alta_tipo_gestion'))
 
-    return render_template("abms/alta_tipo_gestion.html", form=form, tipos=tipos)
+    return render_template("admin/alta_tipo_gestion.html", form=form, tipos=tipos)
 
-@admin_bp.route("/abms/altapermisos/", methods = ['GET', 'POST'])
+@admin_bp.route("/admin/altapermisos/", methods = ['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -259,11 +271,11 @@ def alta_permiso():
             flash(f"Se han creado {q_altas} permisos", "alert-success")
         else:
             flash(f"No hay nuevos permisos", "alert-warning")
-        return redirect(url_for('abms.alta_permiso'))
+        return redirect(url_for('admin.alta_permiso'))
 
-    return render_template("abms/alta_permisos.html", form=form, permisos=permisos)
+    return render_template("admin/alta_permisos.html", form=form, permisos=permisos)
 
-@admin_bp.route("/abms/eliminarpermisos/", methods=['GET', 'POST'])
+@admin_bp.route("/admin/eliminarpermisos/", methods=['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -273,9 +285,9 @@ def eliminar_permiso():
     permiso.delete()
     
     flash ('Permiso eliminado correctamente', 'alert-success')
-    return redirect(url_for('abms.alta_permiso'))
+    return redirect(url_for('admin.alta_permiso'))
 
-@admin_bp.route("/abms/crearroles/", methods=['GET', 'POST'])
+@admin_bp.route("/admin/crearroles/", methods=['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -291,10 +303,10 @@ def crear_roles():
         rol.save() 
         
         flash ('Rol creado correctamente', 'alert-success')
-        return redirect(url_for('abms.crear_roles'))
-    return render_template("abms/alta_roles.html", form=form, todos_los_roles=todos_los_roles)
+        return redirect(url_for('admin.crear_roles'))
+    return render_template("admin/alta_roles.html", form=form, todos_los_roles=todos_los_roles)
 
-@admin_bp.route("/abms/asignarpermisosroles/", methods=['GET', 'POST'])
+@admin_bp.route("/admin/asignarpermisosroles/", methods=['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -303,23 +315,23 @@ def asignar_permisos_roles():
     permisos_en_rol = Roles.get_by_id(id_rol)
     
     form = PermisosSelectForm()
-    form.id_permiso.choices=permisos_select(id_rol)
+    form.id_permiso.choices=permisos_en_roles_select(id_rol)
     
     if form.validate_on_submit():
         permiso = Permisos.get_by_id(form.id_permiso.data)
         for permiso_en_rol in permisos_en_rol.permisos:
             if permiso_en_rol.id == int(form.id_permiso.data):
                 flash ('El rol ya tiene el permiso', 'alert-warning')
-                return redirect(url_for('abms.asignar_permisos_roles', id_rol = id_rol))    
+                return redirect(url_for('admin.asignar_permisos_roles', id_rol = id_rol))    
         
         permisos_en_rol.permisos.append(permiso)
         permisos_en_rol.save()
 
         flash ('Permiso asignado correctamente del rol', 'alert-success')
-        return redirect(url_for('abms.asignar_permisos_roles', id_rol = id_rol))
-    return render_template("abms/alta_permisos_en_roles.html", form=form, permisos_en_rol=permisos_en_rol)
+        return redirect(url_for('admin.asignar_permisos_roles', id_rol = id_rol))
+    return render_template("admin/alta_permisos_en_roles.html", form=form, permisos_en_rol=permisos_en_rol)
 
-@admin_bp.route("/abms/eliminarpermisosroles/", methods=['GET', 'POST'])
+@admin_bp.route("/admin/eliminarpermisosroles/", methods=['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -332,9 +344,9 @@ def eliminar_permisos_roles():
     rol.save()  
     
     flash ('Permiso eliminado correctamente del rol', 'alert-success')
-    return redirect(url_for('abms.asignar_permisos_roles', id_rol = id_rol))
+    return redirect(url_for('admin.asignar_permisos_roles', id_rol = id_rol))
 
-@admin_bp.route("/abms/altatareas/", methods = ['GET', 'POST'])
+@admin_bp.route("/admin/altatareas/", methods = ['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -361,12 +373,12 @@ def alta_tarea():
 
         tarea.save()
         flash("Nuevo tarea creado", "alert-success")
-        return redirect(url_for('abms.alta_tarea'))
+        return redirect(url_for('admin.alta_tarea'))
     #falta paginar tareas
     tareas = Tareas.get_all()    
-    return render_template("abms/alta_tarea.html", form=form, tareas=tareas)
+    return render_template("admin/alta_tarea.html", form=form, tareas=tareas)
 
-@admin_bp.route("/abms/modificatarea/", methods = ['GET', 'POST'])
+@admin_bp.route("/admin/modificatarea/", methods = ['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -387,16 +399,16 @@ def modificar_tarea():
         
         tarea.save()
         flash("La tarea ha sido actualizada", "alert-success")
-        return redirect(url_for('abms.alta_tarea'))
+        return redirect(url_for('admin.alta_tarea'))
     
     for campo in list(request.form.items())[1:]:
         data_campo = getattr(form,campo[0]).data
         setattr(tarea,campo[0], data_campo)
   
-    return render_template("abms/modificacion_tarea.html", form=form, tarea=tarea)
+    return render_template("admin/modificacion_tarea.html", form=form, tarea=tarea)
 
 
-@admin_bp.route("/abms/eliminartarea/", methods=['GET', 'POST'])
+@admin_bp.route("/admin/eliminartarea/", methods=['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -409,9 +421,9 @@ def eliminar_tarea():
     else:
         tarea.delete()    
         flash ('Tarea eliminada correctamente del rol', 'alert-success')
-    return redirect(url_for('abms.alta_tarea'))
+    return redirect(url_for('admin.alta_tarea'))
 
-@admin_bp.route("/abms/altatareasportipodegestion/", methods = ['GET', 'POST'])
+@admin_bp.route("/admin/altatareasportipodegestion/", methods = ['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -429,12 +441,12 @@ def alta_tareas_por_tipo_gestion():
         tareas_por_id.save()
    
         flash("Tarea vinculada", "alert-success")
-        return redirect(url_for('abms.alta_tareas_por_tipo_gestion', id_tipo_gestion = id_tipo_gestion))
+        return redirect(url_for('admin.alta_tareas_por_tipo_gestion', id_tipo_gestion = id_tipo_gestion))
     
     tareas_por_tipo_gestion=TiposGestiones.get_all_by_id(id_tipo_gestion) 
-    return render_template("abms/alta_tareas_default.html", form=form,tareas_por_tipo_gestion=tareas_por_tipo_gestion)
+    return render_template("admin/alta_tareas_default.html", form=form,tareas_por_tipo_gestion=tareas_por_tipo_gestion)
 
-@admin_bp.route("/abms/eliminartareaportipogestion/", methods=['GET', 'POST'])
+@admin_bp.route("/admin/eliminartareaportipogestion/", methods=['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -448,9 +460,9 @@ def eliminar_tarea_por_tipo_gestion():
  
        
     flash ('Tarea eliminada correctamente del tipo de gestion', 'alert-success')
-    return redirect(url_for('abms.alta_tareas_por_tipo_gestion', id_tipo_gestion = id_tipo_gestion))
+    return redirect(url_for('admin.alta_tareas_por_tipo_gestion', id_tipo_gestion = id_tipo_gestion))
 
-@admin_bp.route("/abms/altaestados/", methods = ['GET', 'POST'])
+@admin_bp.route("/admin/altaestados/", methods = ['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -473,7 +485,7 @@ def alta_estados():
         
         estado.save()
         flash("Nuevo estado creado", "alert-success")
-        return redirect(url_for('abms.alta_estados'))
+        return redirect(url_for('admin.alta_estados'))
     #falta paginar tareas
     estados = Estados.get_all()    
-    return render_template("abms/alta_estados.html", form=form, estados=estados)
+    return render_template("admin/alta_estados.html", form=form, estados=estados)

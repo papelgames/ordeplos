@@ -311,7 +311,19 @@ class Permisos(Base):
     @staticmethod
     def get_by_id(id_permiso):
         return Permisos.query.filter_by(id = id_permiso).first()
-   
+
+    @staticmethod
+    def get_by_descripcion(descripcion):
+        return Permisos.query.filter_by(descripcion = descripcion).first()
+
+    @staticmethod
+    def get_permisos_no_relacionadas_roles(id_rol): 
+        return  Permisos.query.filter(~Permisos.roles.any(id = id_rol)).all()
+    
+    @staticmethod
+    def get_permisos_no_relacionadas_personas(id_persona): 
+        return  Permisos.query.filter(~Permisos.users.any(id = id_persona)).all()
+  
 class GestionesDeTareas(Base):
     __tablename__ = "gestionesdetareas"
     id_gestion = db.Column(db.Integer, db.ForeignKey('gestiones.id'))

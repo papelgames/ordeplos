@@ -104,10 +104,11 @@ def caratula():
     gestion = Gestiones.get_by_id(id_gestion)
     return render_template("consultas/caratula.html", gestion = gestion)
     
-@consultas_bp.route("/consultas/bitacora/<id_gestion>")
+@consultas_bp.route("/consultas/bitacora/")
 @login_required
 @not_initial_status
-def bitacora(id_gestion):
+def bitacora():
+    id_gestion = request.args.get('id_gestion','')
     gestion = Gestiones.get_by_id(id_gestion)
     bitacora_completa = Observaciones.get_all_by_id_gestion(id_gestion)
 

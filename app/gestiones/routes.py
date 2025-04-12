@@ -7,7 +7,7 @@ from datetime import date, datetime, timedelta
 from flask import render_template, redirect, url_for, current_app, flash, send_file, request #, make_response, abort
 from flask_login import login_required, current_user
 
-from app.auth.decorators import admin_required, not_initial_status
+from app.auth.decorators import admin_required, not_initial_status, nocache
 from app.auth.models import Users
 from app.models import Personas, TiposGestiones, Gestiones, Observaciones, Cobros, ImportesCobros, Tareas, GestionesDeTareas, PersonasEnGestiones
 from . import gestiones_bp 
@@ -51,6 +51,7 @@ def tareas_select(id_gestion):
 @gestiones_bp.route("/gestiones/altagestiones/", methods = ['GET', 'POST'])
 @login_required
 @not_initial_status
+@nocache
 def alta_gestiones():
     id_cliente = request.args.get('id_cliente','')
     clientes = Personas.get_all()
@@ -158,6 +159,7 @@ def alta_gestiones():
 @gestiones_bp.route("/gestiones/gestiones/", methods = ['GET', 'POST'])
 @login_required
 @not_initial_status
+@nocache
 def gestiones():
     criterio = request.args.get('criterio','')
     
@@ -183,11 +185,13 @@ def gestiones():
 
     return render_template("gestiones/gestiones.html", form = form, criterio = criterio, lista_de_personas= lista_de_personas )
 
-@gestiones_bp.route("/gestiones/altacobroscabecera/<int:id_gestion>", methods = ['GET', 'POST'])
+@gestiones_bp.route("/gestiones/altacobroscabecera/", methods = ['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
-def alta_cobros_cabecera(id_gestion):
+@nocache
+def alta_cobros_cabecera():
+    id_gestion = request.args.get('id_gestion','')
     if not id_gestion:
         return redirect(url_for('consultas.lista_gestiones'))
     form = CobrosForm()                                                                                                                   
@@ -219,11 +223,13 @@ def alta_cobros_cabecera(id_gestion):
         return redirect(url_for('consultas.lista_gestiones', criterio = id_gestion))
     return render_template("gestiones/alta_cobros_cabecera.html", form = form, cobros = cobros)
 
-@gestiones_bp.route("/gestiones/altacobros/<int:id_cobro>", methods = ['GET', 'POST'])
+@gestiones_bp.route("/gestiones/altacobros/", methods = ['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
-def alta_importe_cobro(id_cobro):
+@nocache
+def alta_importe_cobro():
+    id_cobro = request.args.get('id_cobro','')
     if not id_cobro:
         return redirect(url_for('consultas.lista_gestiones'))
     form = ImportesCobrosForm()                                                                                                                   
@@ -263,10 +269,12 @@ def alta_importe_cobro(id_cobro):
     return render_template("gestiones/alta_importe_cobro.html", form=form, cobros=cobros, hoy=hoy)
 
 
-@gestiones_bp.route("/gestiones/modificaciongestiones/<int:id_gestion>", methods = ['GET', 'POST'])
+@gestiones_bp.route("/gestiones/modificaciongestiones/", methods = ['GET', 'POST'])
 @login_required
 @not_initial_status
-def modificacion_gestiones(id_gestion):
+@nocache
+def modificacion_gestiones():
+    id_gestion = request.args.get('id_gestion','')
     if not id_gestion:
         return redirect(url_for('gestiones.gestiones'))
     gestion = Gestiones.get_by_id(id_gestion)
@@ -303,10 +311,12 @@ def modificacion_gestiones(id_gestion):
 
     return render_template("gestiones/modificacion_gestiones.html", form = form, clientes = clientes, gestion = gestion)
 
-@gestiones_bp.route("/gestiones/nuevopaso/<int:id_gestion>", methods = ['GET', 'POST'])
+@gestiones_bp.route("/gestiones/nuevopaso/", methods = ['GET', 'POST'])
 @login_required
 @not_initial_status
-def nuevo_paso(id_gestion):
+@nocache
+def nuevo_paso():
+    id_gestion = request.args.get('id_gestion','')
     form = PasoForm()
     gestion = Gestiones.get_by_id(id_gestion)
 
@@ -331,6 +341,7 @@ def nuevo_paso(id_gestion):
 @gestiones_bp.route("/gestiones/gestionestareas/", methods = ['GET', 'POST'])
 @login_required
 @not_initial_status
+@nocache
 def gestiones_tareas():
     id_gestion = request.args.get('id_gestion','')
 
@@ -355,6 +366,7 @@ def gestiones_tareas():
 @gestiones_bp.route("/gestiones/detallegxt/", methods = ['GET', 'POST'])
 @login_required
 @not_initial_status
+@nocache
 def detalle_gdt():
     id_gestion_de_tarea = request.args.get('id_gestion_de_tarea','')
 
