@@ -37,17 +37,17 @@
                 <td> {{ gestion.tipos_gestiones.descripcion }}</td>
                 <td>
                     <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
                             Acción
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item"  href="{{ url_for('gestiones.modificacion_gestiones', id_gestion = gestion.id) }}">Modificar gestión</a>
-                        <a class="dropdown-item"  href="{{ url_for('gestiones.alta_cobros_cabecera', id_gestion = gestion.id) }}">Crear presupuesto cobro</a>
-                        <a class="dropdown-item"  href="{{ url_for('gestiones.gestiones_tareas', id_gestion = gestion.id) }}">Tareas</a>
-                        <a class="dropdown-item"  href="{{ url_for('consultas.tareas_pendientes', id_gestion = gestion.id) }}">Tareas pendientes</a>
-                        <a class="dropdown-item"  href="{{ url_for('consultas.cobro', id_gestion = gestion.id) }}">Ver presupuesto cobro</a>
-                        <a class="dropdown-item"  href="{{ url_for('consultas.caratula', id_gestion = gestion.id)}} ">Carátula</a>
-                        <a class="dropdown-item"  href="{{ url_for('consultas.bitacora', id_gestion = gestion.id) }}">Bitácora</a>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item"  href="{{ url_for('gestiones.modificacion_gestiones', id_gestion = gestion.id) }}">Modificar gestión</a></li>
+                            <li><a class="dropdown-item"  href="{{ url_for('gestiones.alta_cobros_cabecera', id_gestion = gestion.id) }}">Crear presupuesto cobro</a></li>
+                            <li><a class="dropdown-item"  href="{{ url_for('gestiones.gestiones_tareas', id_gestion = gestion.id) }}">Tareas</a></li>
+                            <li><a class="dropdown-item"  href="{{ url_for('consultas.tareas_pendientes', id_gestion = gestion.id) }}">Tareas pendientes</a></li>
+                            <li><a class="dropdown-item"  href="{{ url_for('consultas.cobro', id_gestion = gestion.id) }}">Ver presupuesto cobro</a></li>
+                            <li><a class="dropdown-item"  href="{{ url_for('consultas.caratula', id_gestion = gestion.id)}} ">Carátula</a></li>
+                            <li><a class="dropdown-item"  href="{{ url_for('consultas.bitacora', id_gestion = gestion.id) }}">Bitácora</a></li>
                     </div>
                 </td>
             </tr>
@@ -98,16 +98,17 @@
             <td> {{ gestiones.tipos_gestiones.descripcion }}</td>
             <td>
                 <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
                         Acción
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item"  href="{{ url_for('gestiones.modificacion_gestiones', id_gestion = gestiones.id) }}">Modificar gestión</a>
-                    <a class="dropdown-item"  href="{{ url_for('gestiones.alta_cobros_cabecera', id_gestion = gestiones.id) }}">Crear presupuesto cobro</a>
-                    <a class="dropdown-item"  href="{{ url_for('gestiones.gestiones_tareas', id_gestion = gestiones.id) }}">Tareas</a>
-                    <a class="dropdown-item"  href="{{ url_for('consultas.cobro', id_gestion = gestiones.id) }}">Ver presupuesto cobro</a>
-                    <a class="dropdown-item"  href="{{ url_for('consultas.caratula', id_gestion = gestiones.id)}} ">Carátula</a>
-                    <a class="dropdown-item"  href="{{ url_for('consultas.bitacora', id_gestion = gestiones.id)}} ">Bitácora</a>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item"  href="{{ url_for('gestiones.modificacion_gestiones', id_gestion = gestiones.id) }}">Modificar gestión</a></li>
+                        <li><a class="dropdown-item"  href="{{ url_for('gestiones.alta_cobros_cabecera', id_gestion = gestiones.id) }}">Crear presupuesto cobro</a></li>
+                        <li><a class="dropdown-item"  href="{{ url_for('gestiones.gestiones_tareas', id_gestion = gestiones.id) }}">Tareas</a></li>
+                        <li><a class="dropdown-item"  href="{{ url_for('consultas.cobro', id_gestion = gestiones.id) }}">Ver presupuesto cobro</a></li>
+                        <li><a class="dropdown-item"  href="{{ url_for('consultas.caratula', id_gestion = gestiones.id)}} ">Carátula</a></li>
+                        <li><a class="dropdown-item"  href="{{ url_for('consultas.bitacora', id_gestion = gestiones.id)}} ">Bitácora</a></li>
+                    </ul>
                 </div>
             </td>
         </tr>

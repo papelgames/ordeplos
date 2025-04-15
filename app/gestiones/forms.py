@@ -7,6 +7,8 @@ from wtforms.fields import FloatField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, NumberRange, ValidationError, Optional
 from app.models import Personas
 from app.auth.models import Users
+from app.common.controles import validar_correo, validar_cuit
+
 
 class BusquedaForm(FlaskForm):
     buscar = StringField('Buscar')
@@ -21,20 +23,19 @@ class AltaGestionesForm(FlaskForm):
     
     
 class AltaGestionesPersonasForm(AltaGestionesForm):
+    id = HiddenField('id')
     descripcion_nombre = StringField("Nombre/Razón Social", validators=[DataRequired('Debe cargar el nombre o la razón social' )])
     genero = SelectField('Genero', choices =[( '','Seleccionar genero'),( "M",'Masculino'),( "F",'Femenino'),( "X",'No Binario'),( "E",'Empresa/Persona Jurídica' )], coerce = str, default = None, validators=[DataRequired('Seleccione genero')])
     tipo_persona = SelectField('Tipo de persona', choices =[( '','Seleccionar tipo de persona'),( "fisica",'Persona Física'),( "juridica",'Persona Jurídica')], coerce = str, default = None, validators=[DataRequired('Seleccione tipo de persona')])
-    correo_electronico = StringField('Correo electrónico', validators=[Email()])
-    telefono = StringField('Telefono')
+    correo_electronico = StringField('Correo electrónico', validators=[Email(), validar_correo])
+    telefono = StringField('Telefono') 
     dni = StringField('DNI', validators=[DataRequired(), Length(max=8)])
-    cuit = StringField('CUIT', validators=[DataRequired(), Length(max=11)])
-    #estado = SelectField('Tipo de persona', choices =[], coerce = str, default = None)
-    #nota = TextAreaField('Nota', validators=[Length(max=256)])
+    cuit = StringField('CUIT', validators=[DataRequired('Debe completar el numero de cuit'), Length(max=11), validar_cuit])
 
-    def validate_cuit (self, cuit):
-        persona_x_cuit = Personas.get_by_cuit(cuit.data)
-        if persona_x_cuit:
-            raise ValidationError('El titular que está intentado crear ya existe debe seleccionarlo')
+    # def validate_cuit (self, cuit):
+    #     persona_x_cuit = Personas.get_by_cuit(cuit.data)
+    #     if persona_x_cuit:
+    #         raise ValidationError('El titular que está intentado crear ya existe debe seleccionarlo')
 
 
 class ModificacionGestionesForm(AltaGestionesForm):

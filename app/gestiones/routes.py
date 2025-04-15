@@ -281,8 +281,7 @@ def modificacion_gestiones():
     form = AltaGestionesForm(obj=gestion)                                                                                                                   
     clientes = Personas.get_all()
     form.id_tipo_gestion.choices = tipo_gestion_select()
-    #form.id_tipo_bienes.choices = tipo_bien_select()
-    
+
     if form.validate_on_submit():
         form.populate_obj(gestion)  # Actualizar la gestión con los datos del formulario
         gestion.usuario_modificacion = current_user.username
@@ -300,14 +299,14 @@ def modificacion_gestiones():
         flash("Se ha modificado la gestion correctamente.", "alert-success")
         return redirect(url_for('consultas.caratula', id_gestion = gestion.id))
        
-    for campo in list(request.form.items())[1:11]:
-        data_campo = getattr(form,campo[0]).data
-        #valido que que estos campos no queden string porque da error autoflush no agrego id_dibujante porque lo tengo que sacar de acá-
-        if campo[0] == 'id_tipo_bienes' or campo[0] == 'id_tipo_gestion' and data_campo == '':
-            data_campo = None
-            setattr(gestion,campo[0], data_campo)
-        else:
-            setattr(gestion,campo[0], data_campo)
+    # for campo in list(request.form.items())[1:11]:
+    #     data_campo = getattr(form,campo[0]).data
+    #     #valido que que estos campos no queden string porque da error autoflush no agrego id_dibujante porque lo tengo que sacar de acá-
+    #     if campo[0] == 'id_tipo_gestion' and data_campo == '':
+    #         data_campo = None
+    #         setattr(gestion,campo[0], data_campo)
+    #     else:
+    #         setattr(gestion,campo[0], data_campo)
 
     return render_template("gestiones/modificacion_gestiones.html", form = form, clientes = clientes, gestion = gestion)
 

@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import abort, redirect, url_for
+from flask import abort, redirect, url_for, make_response
 
 from flask_login import current_user
 
