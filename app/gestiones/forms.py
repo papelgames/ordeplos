@@ -1,5 +1,3 @@
-
-#from ast import Str
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import (StringField, SubmitField, TextAreaField, BooleanField, DateField,  SelectField, HiddenField, DecimalField)
@@ -65,6 +63,3 @@ class DetallesGdTForm(FlaskForm):
     fecha_inicio = DateField('Fecha de inicio', validators=[DataRequired('Debe cargar la fecha de inicio de la tarea' )])
     fecha_fin = DateField('Fecha de fin', validators=[Optional()])
     observacion = TextAreaField('Observación', validators=[Length(max=256)])
-
-class DetallesGdTDibujanteForm(DetallesGdTForm):
-    id_dibujante = StringField('Dibujante', validators=[DataRequired('Debe elegir un dibujante de la lista' )])

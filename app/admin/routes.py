@@ -55,7 +55,7 @@ def tareas_correlativas_select():
 #creo una tupla para usar en el campo select del form que quiera que necesite las tareas
 def tareas_select(id_tipo_gestion):
     tareas = Tareas.get_tareas_no_relacionadas_tipo_gestion(id_tipo_gestion)
-    select_tareas =[(0,'Seleccionar Tarea')]
+    select_tareas =[]
     for rs in tareas:
         sub_select_tareas = (rs.id, rs.descripcion)
         select_tareas.append(sub_select_tareas)
@@ -359,13 +359,11 @@ def alta_tarea():
         correlativa_de = form.correlativa_de.data
         dias_para_vencimiento = form.dias_para_vencimiento.data
         fecha_unica = form.fecha_unica.data
-        carga_dibujante = form.carga_dibujante.data
         
         tarea = Tareas(descripcion=descripcion, 
                            correlativa_de=correlativa_de,
                            dias_para_vencimiento=dias_para_vencimiento,
                            fecha_unica=fecha_unica,
-                           carga_dibujante=carga_dibujante,
                            activo= True,
                            usuario_alta=current_user.username)
 
@@ -393,10 +391,6 @@ def modificar_tarea():
     if form.validate_on_submit():
         form.populate_obj(tarea)
         tarea.usuario_modificacion = current_user.username
-        print (form.fecha_unica.data)
-        print (form.carga_dibujante.data)
-        print (form.activo.data)
-        
         tarea.save()
         flash("La tarea ha sido actualizada", "alert-success")
         return redirect(url_for('admin.alta_tarea'))

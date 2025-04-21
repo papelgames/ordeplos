@@ -36,22 +36,20 @@
 							
 						</tr>
 					</thead>
-					
 					<tbody>
 						{% for tareas_tipo_gestiones in tareas_por_tipo_gestion %}
 							{% for tarea_por_tipo_gestion in tareas_tipo_gestiones.tareas %}
 								<tr>
 									<th scope="row">{{ tarea_por_tipo_gestion.id }}</th>
 									<td> {{ tarea_por_tipo_gestion.descripcion }}</td>
-								
 									<td>
 										<div class="dropdown">
-											<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+											<button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
 												Acción
 										</button>
-										<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-											<a class="dropdown-item"  href="{{ url_for('admin.eliminar_tarea_por_tipo_gestion', id_tarea = tarea_por_tipo_gestion.id, id_tipo_gestion = tareas_por_tipo_gestion[0].id) }}">Anular</a>
-										</div>
+										<ul class="dropdown-menu">
+											<li><a class="dropdown-item"  href="{{ url_for('admin.eliminar_tarea_por_tipo_gestion', id_tarea = tarea_por_tipo_gestion.id, id_tipo_gestion = tareas_por_tipo_gestion[0].id) }}">Anular</a></li>
+										</ul>
 									</td>
 								</tr>
 							{% endfor %}

@@ -36,16 +36,16 @@
 					<tr>
 						<th scope="row">{{ tipo.id }}</th>
 						<td> {{ tipo.descripcion }}</td>
-					
 						<td>
 							<div class="dropdown">
-								<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
 									Acción
 							</button>
-							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-								<a class="dropdown-item"  href="{{ url_for('admin.alta_tareas_por_tipo_gestion', id_tipo_gestion = tipo.id) }}">Cargar tareas</a>
-							</div>
+							<ul class="dropdown-menu">
+								<li><a class="dropdown-item"  href="{{ url_for('admin.alta_tareas_por_tipo_gestion', id_tipo_gestion = tipo.id) }}">Cargar tareas</a></li>
+							</ul>
 						</td>
+						
 					</tr>
 				{% endfor %}
 			</tbody>

@@ -15,8 +15,7 @@
 			{{ render_input(form.descripcion,'', id= "descripcion" , class="form-control", placeholder="Nombre de la tarea" ) }}
 			{{ render_input(form.correlativa_de,'', id= "correlativa_de" , class="form-control" ) }}
 			{{ render_input(form.dias_para_vencimiento,'', id= "dias_para_vencimiento" , class="form-control" ) }}
-			{{ render_input(form.fecha_unica,'', id= "fecha_unica" , class="form-control" ) }}
-			{{ render_input(form.carga_dibujante,'', id= "carga_dibujante" , class="form-control" ) }}
+			{{ render_input(form.fecha_unica,'', id= "fecha_unica" , class="form-check-input" ) }}
 			<button type="submmit" class="btn btn-primary" >Guardar</button>
 			
 		</form>
@@ -27,11 +26,11 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
+					<th scope="col">ID TAREA</th>
 					<th scope="col">TAREA</th>
 					<th scope="col">CORRELATIVA DE</th>
 					<th scope="col">DIAS DE VENCIMIENTO</th>
 					<th scope="col">¿ES FECHA UNICA?</th>
-					<th scope="col">¿CARGA DIBUJANTE?</th>
 					<th scope="col">¿ACTIVO?</th>
 					<th scope="col">ACCION</th>
 					
@@ -41,21 +40,21 @@
 			<tbody>
 				{% for tarea in tareas %}  
 					<tr>
+						<th scope="row">{{ tarea.id }}</th>
 						<th scope="row">{{ tarea.descripcion }}</th>
 						<th scope="row">{{ tarea.correlativa_de }}</th>
 						<th scope="row">{{ tarea.dias_para_vencimiento }}</th>
 						<th scope="row">{{ tarea.fecha_unica }}</th>
-						<th scope="row">{{ tarea.carga_dibujante }}</th>
 						<th scope="row">{{ tarea.activo }}</th>
 						<td>
 							<div class="dropdown">
-								<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
 									Acción
 							</button>
-							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-								<a class="dropdown-item"  href="{{ url_for('admin.modificar_tarea', id_tarea = tarea.id) }}">Modificar Tarea</a>
-								<a class="dropdown-item"  href="{{ url_for('admin.eliminar_tarea', id_tarea = tarea.id) }}">Eliminar Tarea</a>
-							</div>
+							<ul class="dropdown-menu">
+								<li><a class="dropdown-item"  href="{{ url_for('admin.modificar_tarea', id_tarea = tarea.id) }}">Modificar Tarea</a></li>
+								<li><a class="dropdown-item"  href="{{ url_for('admin.eliminar_tarea', id_tarea = tarea.id) }}">Eliminar Tarea</a></li>
+							</ul>
 						</td>
 					</tr>
 				{% endfor %}

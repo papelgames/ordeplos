@@ -39,7 +39,6 @@ class TareasForm(FlaskForm):
     correlativa_de = SelectField('Correlativa de', choices =[], coerce = int)
     dias_para_vencimiento = IntegerField('Dias para el vencimiento')
     fecha_unica = BooleanField('¿es fecha única?')
-    carga_dibujante = BooleanField('¿Carga dibujante?')
     activo = BooleanField('¿Activo?')
 
 class RolesForm(FlaskForm):

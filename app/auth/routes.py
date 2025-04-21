@@ -92,6 +92,8 @@ def login():
             if not next_page or urlparse(next_page).netloc != '':
                 next_page = url_for('public.index')
             return redirect(next_page)
+        else:
+            flash("El usuario o la contraseña son incorrectos.", "alert-warning")
     return render_template('auth/login_form.html', form=form)
 
 @auth_bp.route('/changepassword', methods=['GET', 'POST'])

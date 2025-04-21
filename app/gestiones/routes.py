@@ -11,7 +11,7 @@ from app.auth.decorators import admin_required, not_initial_status, nocache
 from app.auth.models import Users
 from app.models import Personas, TiposGestiones, Gestiones, Observaciones, Cobros, ImportesCobros, Tareas, GestionesDeTareas, PersonasEnGestiones
 from . import gestiones_bp 
-from .forms import AltaGestionesForm,AltaGestionesPersonasForm, BusquedaForm, CobrosForm, ImportesCobrosForm, PasoForm, GestionesTareasForm, DetallesGdTForm, DetallesGdTDibujanteForm
+from .forms import AltaGestionesForm,AltaGestionesPersonasForm, BusquedaForm, CobrosForm, ImportesCobrosForm, PasoForm, GestionesTareasForm, DetallesGdTForm
 
 from app.common.mail import send_email
 
@@ -29,15 +29,6 @@ def tipo_gestion_select():
         sub_select_tipo_gestion = (str(rs.id), rs.descripcion)
         select_tipo_gestion.append(sub_select_tipo_gestion)
     return select_tipo_gestion
-
-#creo una tupla para usar en el campo select del form que quiera que necesite los tipo de bienes
-# def tipo_bien_select():
-#     tipos_bienes = TiposBienes.get_all()
-#     select_tipo_bien =[( '','Seleccionar tipo de bien')]
-#     for rs in tipos_bienes:
-#         sub_select_tipo_bien = (str(rs.id), rs.descripcion)
-#         select_tipo_bien.append(sub_select_tipo_bien)
-#     return select_tipo_bien
 
 #creo una tupla para usar en el campo select del form que quiera que necesite las tareas
 def tareas_select(id_gestion):
@@ -372,21 +363,10 @@ def detalle_gdt():
     hoy = datetime.today()
     gestion_de_tarea = GestionesDeTareas.get_all_by_id_gestion_de_tarea(id_gestion_de_tarea)
     gestion = None
-    if gestion_de_tarea.tareas.carga_dibujante == True:
-        form = DetallesGdTDibujanteForm(obj=gestion_de_tarea)
-        gestion = Gestiones.get_by_id(gestion_de_tarea.id_gestion)
-        dibujante_actual = gestion.id_dibujante
-        if dibujante_actual:
-            nombre_dibujante_actual = gestion.dibujante.descripcion_nombre
-            correo_dibujante_actual = gestion.dibujante.correo_electronico
-        carga_dibujante_valor = True
-    else:
-        form = DetallesGdTForm(obj=gestion_de_tarea)
-        carga_dibujante_valor = False
-    observaciones_gestion_tareas = Observaciones.get_all_by_id_gestion_de_tarea(id_gestion_de_tarea)
 
-    dibujantes = Users.get_by_es_dibujante()
-    
+    form = DetallesGdTForm(obj=gestion_de_tarea)
+    observaciones_gestion_tareas = Observaciones.get_all_by_id_gestion_de_tarea(id_gestion_de_tarea)
+   
     if form.validate_on_submit():
         form.populate_obj(gestion_de_tarea) 
         gestion_de_tarea.usuario_modificacion = current_user.username
@@ -397,34 +377,6 @@ def detalle_gdt():
             observacion = observacion,
             usuario_alta = current_user.username
         )
-        if carga_dibujante_valor: #si estamos modificando una tarea de dibujante
-            id_dibujante = form.id_dibujante.data.split('|',)[0]
-            
-            gestion.id_dibujante = int(id_dibujante)
-            gestion.usuario_modificacion = current_user.username
-            gestion.save()
-            observacion_dibujante = Observaciones(
-                                    id_gestion = gestion_de_tarea.id_gestion,
-                                    observacion = 'Se asignó al dibujante: ' + form.id_dibujante.data,
-                                    usuario_alta = current_user.username
-                                )
-            
-            gestion_de_tarea.observaciones.append(observacion_dibujante)
-            #enviamos el correo avisando que se lo asigno como dibujante
-            if int(id_dibujante) != dibujante_actual:
-                nuevo_dibujante = Personas.get_by_id(id_dibujante)
-                send_email(subject='Asignación de dibujo',
-                            sender=(current_app.config['MAIL_DEFAULT_SENDER'], current_app.config['MAIL_USERNAME'] ),
-                            recipients=[nuevo_dibujante.correo_electronico, ],
-                            text_body=f'Hola {nuevo_dibujante.descripcion_nombre}, has sido asignado como dibujante en la gestión {gestion.id} de {gestion.titular}',
-                            html_body=f'<p>Hola <strong>{nuevo_dibujante.descripcion_nombre}</strong>, has sido asignado como dibujante en la gestión {gestion.id} de {gestion.titular}</p> {observacion}')
-                if dibujante_actual:
-                    send_email(subject='Dibujo cancelado',
-                            sender=(current_app.config['MAIL_DEFAULT_SENDER'], current_app.config['MAIL_USERNAME'] ),
-                            recipients=[correo_dibujante_actual, ],
-                            text_body=f'Hola {nombre_dibujante_actual}, dibujo cancelado',
-                            html_body=f'<p>Hola <strong>{nombre_dibujante_actual}</strong>, el dibujo de la gestión {gestion.id} de {gestion.titular} ha sido cancelado </p> ')
-
 
         if observacion:
             gestion_de_tarea.observaciones.append(observacion_gestion)
@@ -440,7 +392,5 @@ def detalle_gdt():
                            form=form, 
                            gestion_de_tarea=gestion_de_tarea, 
                            observaciones_gestion_tareas=observaciones_gestion_tareas, 
-                           carga_dibujante_valor=carga_dibujante_valor, 
-                           dibujantes=dibujantes, 
                            gestion=gestion,
                            hoy=hoy)
