@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-project_folder = os.path.expanduser('~/groma')  # adjust as appropriate
+project_folder = os.path.expanduser('~/ordeplos')  # adjust as appropriate
 load_dotenv(os.path.join(project_folder, '.env'))
 
 
