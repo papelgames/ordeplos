@@ -231,13 +231,13 @@ def firstin():
                            tabla = "users",
                            usuario_alta = "admin",
                            usuario_modificacion = "admin")
-        
+        estado_uno.save()     
         estado_dos=Estados(clave = 2,
                            descripcion = "Activo",
                            tabla = "users",
                            usuario_alta = "admin",
                            usuario_modificacion = "admin")
-        estado_uno.save()
+
         estado_dos.save()
 
         # Creamos el usuario admin
