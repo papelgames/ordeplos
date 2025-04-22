@@ -134,7 +134,7 @@ def forgot_password():
             name = user.persona.descripcion_nombre
             url_login = url_for('auth.login', _external=True)
 
-            send_email(subject='ordeplos | Blanqueo de contraseña',
+            send_email(subject='Ordeplos | Blanqueo de contraseña',
                         sender=(current_app.config['MAIL_DEFAULT_SENDER'], 
                                 current_app.config['MAIL_USERNAME'] ),
                         recipients=[correo_electronico, ],
@@ -226,6 +226,20 @@ def firstin():
         flash ("El administrador ya fue creado","alert-warning")
         
     else:
+        estado_uno=Estados(clave = 1,
+                           descripcion = "Temporal",
+                           tabla = "users",
+                           usuario_alta = "admin",
+                           usuario_modificacion = "admin")
+        
+        estado_dos=Estados(clave = 2,
+                           descripcion = "Activo",
+                           tabla = "users",
+                           usuario_alta = "admin",
+                           usuario_modificacion = "admin")
+        estado_uno.save()
+        estado_dos.save()
+
         # Creamos el usuario admin
         estado = Estados.get_first_by_clave_tabla(1,'users')
         user = Users(username=username, 
@@ -233,6 +247,6 @@ def firstin():
                     )
         password = "ordeplos"
         user.set_password(password)
-        user.id_estado = estado.id
-        user.save()
+        estado.user.append(user)
+        estado.save()
     return redirect(url_for('auth.show_signup_form'))
