@@ -24,6 +24,7 @@ def show_signup_form():
     if form.validate_on_submit():
         name = form.name.data
         username = form.username.data
+        dni = form.cuit.data[2:10]
         cuit = form.cuit.data
         correo_electronico = form.correo_electronico.data
         new_password = 'ordeplos' + str(strftime('%d%m%y%H%m%s', gmtime()))
@@ -62,6 +63,7 @@ def show_signup_form():
             else:
             #sino creo la persona con los datos del formulario mas el user que ya tengo y se los agrego al estado.
                 persona = Personas(descripcion_nombre=name,
+                                dni=dni,
                                 cuit=cuit,
                                 correo_electronico=correo_electronico,
                                 usuario_alta = current_user.username)
@@ -231,13 +233,13 @@ def firstin():
                            tabla = "users",
                            usuario_alta = "admin",
                            usuario_modificacion = "admin")
-        estado_uno.save()     
+           
         estado_dos=Estados(clave = 2,
                            descripcion = "Activo",
                            tabla = "users",
                            usuario_alta = "admin",
                            usuario_modificacion = "admin")
-
+        estado_uno.save()  
         estado_dos.save()
 
         # Creamos el usuario admin

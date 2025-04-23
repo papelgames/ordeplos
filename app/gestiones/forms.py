@@ -5,7 +5,7 @@ from wtforms.fields import FloatField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, NumberRange, ValidationError, Optional
 from app.models import Personas
 from app.auth.models import Users
-from app.common.controles import validar_correo, validar_cuit
+from app.common.controles import validar_correo, validar_cuit_guardado, validar_cuit, required_conditional_cuit,required_conditional_dni
 
 
 class BusquedaForm(FlaskForm):
@@ -27,14 +27,8 @@ class AltaGestionesPersonasForm(AltaGestionesForm):
     tipo_persona = SelectField('Tipo de persona', choices =[( '','Seleccionar tipo de persona'),( "fisica",'Persona Física'),( "juridica",'Persona Jurídica')], coerce = str, default = None, validators=[DataRequired('Seleccione tipo de persona')])
     correo_electronico = StringField('Correo electrónico', validators=[Email(), validar_correo])
     telefono = StringField('Telefono') 
-    dni = StringField('DNI', validators=[DataRequired(), Length(max=8)])
-    cuit = StringField('CUIT', validators=[DataRequired('Debe completar el numero de cuit'), Length(max=11), validar_cuit])
-
-    # def validate_cuit (self, cuit):
-    #     persona_x_cuit = Personas.get_by_cuit(cuit.data)
-    #     if persona_x_cuit:
-    #         raise ValidationError('El titular que está intentado crear ya existe debe seleccionarlo')
-
+    dni = StringField('DNI', validators=[required_conditional_dni, Length(max=8)])
+    cuit = StringField('CUIT', validators=[required_conditional_cuit, Length(max=11), validar_cuit_guardado, validar_cuit])
 
 class ModificacionGestionesForm(AltaGestionesForm):
     fecha_medicion = DateField('Fecha de medicion')

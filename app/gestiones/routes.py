@@ -14,6 +14,7 @@ from . import gestiones_bp
 from .forms import AltaGestionesForm,AltaGestionesPersonasForm, BusquedaForm, CobrosForm, ImportesCobrosForm, PasoForm, GestionesTareasForm, DetallesGdTForm
 
 from app.common.mail import send_email
+from app.common.funciones import generar_cuil_cuit
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,11 @@ def alta_gestiones():
             fecha_cita = form.fecha_cita.data
             cita = form.cita.data
             observacion = form.observacion.data
+
+            if not dni:
+                dni = cuit[2:10]
+            elif not cuit:
+                cuit = generar_cuil_cuit(dni, genero)
 
             nuevo_cliente = Personas(descripcion_nombre=descripcion_nombre,
                                     genero = genero,
