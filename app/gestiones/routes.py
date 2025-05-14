@@ -192,7 +192,6 @@ def alta_cobros_cabecera():
     if not id_gestion:
         return redirect(url_for('consultas.lista_gestiones'))
     form = CobrosForm()                                                                                                                   
-    
     cobros = Cobros.get_all_by_id_gestion(id_gestion)
     if cobros:
         flash('No puede crear un nuevo presupuesto porque ya existe','alert-warning')
@@ -213,12 +212,60 @@ def alta_cobros_cabecera():
             usuario_alta = current_user.username)
 
         if observacion:
-            nuevo_cobro.observaciones = observacion_cobro_cabecera
+            nuevo_cobro.observaciones.append(observacion_cobro_cabecera)
+        nuevo_cobro.cobro = nuevo_cobro
         nuevo_cobro.save()
 
         flash("El cobro se ha proyectado correctamente.", "alert-success")
         return redirect(url_for('consultas.lista_gestiones', criterio = id_gestion))
-    return render_template("gestiones/alta_cobros_cabecera.html", form = form, cobros = cobros)
+    return render_template("gestiones/cobros_cabecera.html", form = form, cobros = cobros)
+
+@gestiones_bp.route("/gestiones/modificacobroscabecera/", methods = ['GET', 'POST'])
+@login_required
+@admin_required
+@not_initial_status
+def modifica_cobros_cabecera():
+    id_gestion = request.args.get('id_gestion','')
+    if not id_gestion:
+        return redirect(url_for('consultas.lista_gestiones'))
+    form = CobrosForm()                                                                                                                   
+    cobro_gestion = Gestiones.get_by_id(id_gestion)
+    importe_actual = cobro_gestion.cobro.importe_total
+    if form.validate_on_submit():
+        form.populate_obj(cobro_gestion.cobro)
+        cobro_gestion.cobro.usuario_modificacion = current_user.username
+        observacion = form.observacion.data
+        
+        #guardo una observación fija para que quede registro que se modificó si se modificó el monto
+        if importe_actual != form.importe_total.data:
+            observacion_cobro_cabecera_fija = Observaciones(
+                id_gestion = id_gestion,
+                observacion =  f'Se actualizó el presupuesto de: ${importe_actual} a ${form.importe_total.data}',
+                usuario_alta = current_user.username)       
+            cobro_gestion.cobro.observaciones.append(observacion_cobro_cabecera_fija)
+            
+        #si se guardó una observación la guardo.
+        if observacion:
+            observacion_cobro_cabecera = Observaciones(
+            id_gestion = id_gestion,
+            observacion = observacion,
+            usuario_alta = current_user.username)
+
+            cobro_gestion.cobro.observaciones.append(observacion_cobro_cabecera)
+        #actualizo el importe cobrado para que no pinche
+        if cobro_gestion.cobro.importes_cobros:
+            cobro_gestion.cobro.importe_cobrado = sum(importe_cobro.importe for importe_cobro in cobro_gestion.cobro.importes_cobros)
+            #valido que no se esté cargando un importe menor a lo ya cobrado
+            if cobro_gestion.cobro.importe_cobrado > form.importe_total.data:
+                flash("El nuevo importe no puede ser menor a lo ya cobrado.", "alert-danger")
+                return redirect(url_for('gestiones.modifica_cobros_cabecera', id_gestion = id_gestion))
+        
+        cobro_gestion.save()
+
+        flash("El la proyección de cobro de ha actualizado correctamente.", "alert-success")
+        return redirect(url_for('consultas.lista_gestiones', id_gestion = id_gestion))
+    return render_template("gestiones/cobros_cabecera.html", form = form, cobro_gestion=cobro_gestion)
+
 
 @gestiones_bp.route("/gestiones/altacobros/", methods = ['GET', 'POST'])
 @login_required
@@ -226,14 +273,14 @@ def alta_cobros_cabecera():
 @not_initial_status
 @nocache
 def alta_importe_cobro():
-    id_cobro = request.args.get('id_cobro','')
-    if not id_cobro:
-        return redirect(url_for('consultas.lista_gestiones'))
+    id_gestion = request.args.get('id_gestion','')
+    if not id_gestion:
+         return redirect(url_for('consultas.lista_gestiones'))
     form = ImportesCobrosForm()                                                                                                                   
-    cabecera_cobro = Cobros.get_all_by_id_cobro(id_cobro)
+    cabecera_cobro = Gestiones.get_by_id(id_gestion)
     hoy = datetime.today()
-    cobros = ImportesCobros.get_all_by_id_cobro(id_cobro)
-
+    importes_cobrados = sum(importe_cobro.importe for importe_cobro in cabecera_cobro.cobro.importes_cobros)
+    
     if form.validate_on_submit():
         fecha_cobro = form.fecha_cobro.data
         importe = form.importe.data
@@ -242,29 +289,92 @@ def alta_importe_cobro():
         medio_cobro = form.medio_cobro.data
         observacion = form.observacion.data
         
-        nuevo_importe_cobro = ImportesCobros(id_cobro = id_cobro,
-                             fecha_cobro = fecha_cobro,
-                             importe = importe,
-                             tipo_cambio = tipo_cambio,
-                             moneda = moneda,
-                             medio_cobro = medio_cobro,
-                             usuario_alta = current_user.username)
+        nuevo_importe_cobro = ImportesCobros(
+                                fecha_cobro = fecha_cobro,
+                                importe = importe,
+                                tipo_cambio = tipo_cambio,
+                                moneda = moneda,
+                                medio_cobro = medio_cobro,
+                                usuario_alta = current_user.username)
         
-        observacion_importe_cobro = Observaciones(
-            id_gestion = cabecera_cobro.id_gestion,
-            id_cobro = id_cobro,
-            observacion = observacion,
-            usuario_alta = current_user.username
-        )
-
+        #valido que no se esté cargando un un pago superior a lo presupuestado
+        if float(importes_cobrados) + importe > cabecera_cobro.cobro.importe_total:
+            flash("El importe cobrado no puede superar al importe presupuestado, no se ha guardado el cobro.", "alert-danger")
+            return redirect(url_for('consultas.cobro', id_gestion=id_gestion )) 
+        
+        cabecera_cobro.cobro.importe_cobrado = float(importes_cobrados) + importe
+        #si se cargó una observación la guardo
         if observacion:
-            nuevo_importe_cobro.observaciones = observacion_importe_cobro
-        nuevo_importe_cobro.save()
+            observacion_importe_cobro = Observaciones(
+                                                        id_gestion = cabecera_cobro.id,
+                                                        id_cobro = cabecera_cobro.cobro.id,
+                                                        observacion = observacion,
+                                                        usuario_alta = current_user.username
+                                                    )
+            nuevo_importe_cobro.observaciones.append(observacion_importe_cobro)
+        cabecera_cobro.cobro.importes_cobros.append(nuevo_importe_cobro)
+        
+        cabecera_cobro.save()
 
         flash("El importe se ha cargado correctamente.", "alert-success")
-        return redirect(url_for('gestiones.alta_importe_cobro', id_cobro=id_cobro ))
-    return render_template("gestiones/alta_importe_cobro.html", form=form, cobros=cobros, hoy=hoy)
+        return redirect(url_for('consultas.cobro', id_gestion=id_gestion ))
+    return render_template("gestiones/importe_cobro.html", form=form, hoy=hoy)
 
+@gestiones_bp.route("/gestiones/modificacioncobros/", methods = ['GET', 'POST'])
+@login_required
+@admin_required
+@not_initial_status
+@nocache
+def modificacion_importe_cobro():
+    id_cobro_individual = request.args.get('id_cobro_individual','')
+    if not id_cobro_individual:
+         return redirect(url_for('consultas.lista_gestiones'))
+    cobro_individual = ImportesCobros.get_by_id_cobro(id_cobro_individual)
+    form = ImportesCobrosForm(obj=cobro_individual)                                                                                                                   
+    id_gestion = cobro_individual.cobro.id_gestion
+    hoy = datetime.today()
+    importe_actual = cobro_individual.importe
+    
+    if form.validate_on_submit():
+        form.populate_obj(cobro_individual)  # Actualizar la gestión con los datos del formulario
+        cobro_individual.usuario_modificacion = current_user.username
+        observacion = form.observacion.data
+        
+        #calculo los importes cobrados para actualizar la tabla cabecera en importe cobrado
+        cabecera_cobro = Gestiones.get_by_id(id_gestion)
+        importes_cobrados = sum(float(importe_cobro.importe) for importe_cobro in cabecera_cobro.cobro.importes_cobros)
+        
+        #valido que no se esté cargando un pago superior a lo presupuestado
+        if float(importes_cobrados) + form.importe.data > cobro_individual.cobro.importe_total:
+            flash("El importe cobrado no puede superar al importe presupuestado, no se ha guardado el cobro.", "alert-danger")
+            return redirect(url_for('consultas.cobro', id_gestion =id_gestion )) 
+        
+        #valido que para que grabe la observacion fija haya alguna modificacion en los importes
+        if importe_actual != form.importe.data:
+            observacion_importe_cobro_fijo =Observaciones(
+                                                    id_gestion = cobro_individual.cobro.id_gestion,
+                                                    id_cobro = cobro_individual.cobro.id,
+                                                    observacion =  f'Se actualizó el cobro de: ${importe_actual} a ${form.importe.data}',
+                                                    usuario_alta = current_user.username)
+            cobro_individual.observaciones.append(observacion_importe_cobro_fijo)
+        
+        #cobro_individual.cobro.importe_cobrado = float(importes_cobrados) + form.importe.data
+        if observacion:
+            observacion_importe_cobro = Observaciones(
+                                                        id_gestion = cobro_individual.cobro.id_gestion,
+                                                        id_cobro = cobro_individual.cobro.id,
+                                                        observacion = observacion,
+                                                        usuario_alta = current_user.username
+                                                    )
+            cobro_individual.observaciones.append(observacion_importe_cobro)
+        
+        cobro_individual.save()
+        cabecera_cobro.cobro.importe_cobrado =importes_cobrados
+        cabecera_cobro.save()
+
+        flash("El importe se ha cargado correctamente.", "alert-success")
+        return redirect(url_for('consultas.ver_cobros', id_gestion=id_gestion ))
+    return render_template("gestiones/importe_cobro.html", form=form, cobro_individual=cobro_individual, hoy=hoy)
 
 @gestiones_bp.route("/gestiones/modificaciongestiones/", methods = ['GET', 'POST'])
 @login_required

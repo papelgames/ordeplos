@@ -82,14 +82,14 @@ def lista_gestiones():
     return render_template("consultas/lista_gestiones.html", form = form, criterio = criterio, gestiones = gestiones )
 
 
-@consultas_bp.route("/consultas/cobro")
+@consultas_bp.route("/consultas/cobro/")
 @login_required
 @admin_required
 @not_initial_status
 def cobro():
     id_gestion = request.args.get('id_gestion','')
-
-    cobro_individual = Cobros.get_all_by_id_gestion(id_gestion)
+    cobro_individual = Gestiones.get_by_id(id_gestion)
+    
     if cobro_individual:
         return render_template("consultas/cobro.html", cobro_individual = cobro_individual)
     flash("La gestión no tiene dado de alta un presupuesto","alert-warning")

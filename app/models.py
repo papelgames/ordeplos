@@ -91,7 +91,9 @@ class Gestiones (Base):
     observaciones = db.relationship('Observaciones', backref='gestiones', uselist=True, lazy=True)
     gestiones_de_tareas = db.relationship('GestionesDeTareas', backref='gestiones', uselist=True, lazy=True)
     gestiones_en_personas = db.relationship('Personas', secondary='personasengestiones', back_populates='personas_en_gestiones')
-   
+    documentos = db.relationship('Documentos', backref='gestiones', uselist=False)
+    cobro = db.relationship('Cobros', backref='cobros', uselist=False)
+    
     def save(self):
         if not self.id:
             db.session.add(self)
@@ -120,14 +122,16 @@ class Gestiones (Base):
 
 class Cobros (Base):
     __tablename__ = "cobros"
-    id_gestion = db.Column(db.Integer, nullable = False)
+    id_gestion = db.Column(db.Integer, db.ForeignKey('gestiones.id'))
     importe_total = db.Column(db.Numeric(precision=15, scale=2))
+    importe_cobrado = db.Column(db.Numeric(precision=15, scale=2))
     moneda = db.Column(db.String(25))
     estado = db.Column(db.Integer)
     limitada = db.Column(db.Boolean)
     usuario_alta = db.Column(db.String(256))
     usuario_modificacion = db.Column(db.String(256))
-    observaciones = db.relationship('Observaciones', backref='cobros', uselist=False)
+    observaciones = db.relationship('Observaciones', backref='cobros', uselist=True)
+    importes_cobros = db.relationship('ImportesCobros', backref='cobro', uselist=True)
     
     def save(self):
         if not self.id:
@@ -150,9 +154,24 @@ class Cobros (Base):
     def get_by_id(id_persona):
         return Cobros.query.filter_by(id = id_persona).first()
     
+    #reportes
+    @staticmethod
+    def get_deuda_x_clientes():
+        query = db.session.query(
+                Personas.descripcion_nombre.label('cliente'),
+                (func.sum(Cobros.importe_total) - func.sum(Cobros.importe_cobrado)).label('deuda')
+            ).join(Gestiones, Gestiones.id_cliente == Personas.id)\
+            .join(Cobros, Cobros.id_gestion == Gestiones.id)
+            
+        result = query.group_by(
+                Personas.descripcion_nombre
+            ).all()
+        
+        return result 
+
 class ImportesCobros (Base):
     __tablename__ = "importescobros"
-    id_cobro = db.Column(db.Integer, nullable = False)
+    id_cobro = db.Column(db.Integer, db.ForeignKey('cobros.id'))
     fecha_cobro = db.Column(db.DateTime, nullable = False)
     importe = db.Column(db.Numeric(precision=15, scale=2))
     tipo_cambio = db.Column(db.Numeric(precision=15, scale=2))
@@ -160,7 +179,7 @@ class ImportesCobros (Base):
     medio_cobro = db.Column(db.String(25))
     usuario_alta = db.Column(db.String(256))
     usuario_modificacion = db.Column(db.String(256))
-    observaciones = db.relationship('Observaciones', backref='importe_cobro', uselist=False)
+    observaciones = db.relationship('Observaciones', backref='importe_cobro', uselist=True)
 
     def save(self):
         if not self.id:
@@ -168,8 +187,9 @@ class ImportesCobros (Base):
         db.session.commit()
 
     @staticmethod
-    def get_all_by_id_cobro(id_cobro):
-        return ImportesCobros.query.filter_by(id_cobro = id_cobro).all()
+    def get_by_id_cobro(id_cobro):
+        return ImportesCobros.query.filter_by(id = id_cobro).first()
+
 
 
 class Observaciones (Base):
@@ -400,3 +420,43 @@ class TiposGestionesPorTareas(Base):
     __tablename__ = "tiposgestionesportareas"
     id_tipo_gestion = db.Column(db.Integer, db.ForeignKey('tiposgestiones.id'))
     id_tarea = db.Column(db.Integer, db.ForeignKey('tareas.id'))
+
+class Documentos(Base):
+    __tablename__ = "documentos"
+    id_tipo_documento = db.Column(db.Integer, db.ForeignKey('tiposdocumentos.id'))
+    id_gestion = db.Column(db.Integer, db.ForeignKey('gestiones.id'))
+    texto = db.Column(db.Text(16383))
+    usuario_alta = db.Column(db.String(256))
+    usuario_modificacion = db.Column(db.String(256))
+    
+    def save(self):
+        if not self.id:
+            db.session.add(self)
+        db.session.commit()
+
+
+class ModelosDocumentos(Base):
+    __tablename__ = "modelosdocumentos"
+    id_tipo_documento = db.Column(db.Integer, db.ForeignKey('tiposdocumentos.id'))
+    descripcion = db.Column(db.String(256))
+    texto = db.Column(db.Text(16383))
+    usuario_alta = db.Column(db.String(256))
+    usuario_modificacion = db.Column(db.String(256))
+
+    def save(self):
+        if not self.id:
+            db.session.add(self)
+        db.session.commit()
+
+class TiposDocumentos(Base):
+    __tablename__ = "tiposdocumentos"
+    descripcion = db.Column(db.String(50))
+    usuario_alta = db.Column(db.String(256))
+    usuario_modificacion = db.Column(db.String(256))
+    documentos = db.relationship('Documentos', backref='tipos_documentos', uselist=False)
+    modelos_documentos = db.relationship('ModelosDocumentos', backref='tipos_documentos', uselist=False)
+
+    def save(self):
+        if not self.id:
+            db.session.add(self)
+        db.session.commit()

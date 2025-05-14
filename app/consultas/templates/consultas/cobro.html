@@ -7,33 +7,91 @@
 
 {% block content %}
 
-<div class="row">
-    <div class="offset-md-2 col-md-8">
-        <h1><h1> Cobro gestión: <strong>{{ cobro_individual.id_gestion }}</strong></h1></h1>
 
-            <div class="form-group">
-                <h1> Referencia: <strong>{{ cobro_individual.id }}</strong></h1>
-                <h2>Estado: {{ cobro_individual.estado }}</h2>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-6">
-                    <!-- Aca estaban las fechas de cobro -->
-                </div>
-                <div class="col-md-6">
-                    <h4>Importe total: {{ cobro_individual.importe_total }}</h4>
-                    <h4>Moneda: {{ cobro_individual.moneda }} </h4>
-                    
-                    
-                </div>
 
-            </div>
-            <a href=" {{ url_for('gestiones.alta_importe_cobro', id_cobro = cobro_individual.id) }} ">
-                <button class="btn btn-primary">Cargar cobro</button>
-            </a> 
-            
+<div class="row mb-3">
+	<div class="col-md-12 d-flex justify-content-between align-items-center">
+		<h5 class="mb-0">Presupuesto de cobro</h5>
+		<span class="badge badge-secondary">Gestión: {{ cobro_individual.id }}</span>
+	</div>
+</div>
+<div class="row mb-3">
+	<div class="col-md-4">
+		<p class="mb-1 text-muted">Cliente</p>
+		<p class="mb-0">{{ cobro_individual.personas.descripcion_nombre }}</p>
+	</div>
+	<div class="col-md-4">
+		<p class="mb-1 text-muted">Gestion</p>
+		<p class="mb-0">{{ cobro_individual.id }}</p>
+	</div>
+    <div class="col-md-4">
+		<p class="mb-1 text-muted">Número de presupuesto</p>
+		<a class="nav-link" href="{{ url_for('gestiones.modifica_cobros_cabecera', id_gestion = cobro_individual.id) }}">
+		<p class="mb-0">{{ cobro_individual.cobro.id }}</p> 
+		</a>
+	</div>
+</div>
+<hr>
+<div class="row mb-3">
+	<div class="col-md-6">
+		<p class="mb-1 text-muted">Moneda</p>
+		<p class="mb-0">{{ cobro_individual.cobro.moneda }}</p>
+	</div>
+	<div class="col-md-6">
+		<p class="mb-1 text-muted">Detalle</p>
+		<p class="mb-0">Importe total: {{ cobro_individual.cobro.importe_total }}</p>
+        {% if cobro_individual.cobro.importe_cobrado %}
+			<p class="mb-0">Importe cobrado: {{ cobro_individual.cobro.importe_cobrado }}</p>
+		{% else %}
+			<p class="mb-0">Importe cobrado: 0 </p>
+		{% endif %}
+		<p class="mb-0">Debe: {{ cobro_individual.cobro.importe_total|float - cobro_individual.cobro.importe_cobrado|float }}</p>
+	</div>
+    
+</div>
+<a href=" {{ url_for('gestiones.alta_importe_cobro', id_gestion = cobro_individual.id) }} ">
+    <button class="btn btn-light my-2 my-sm-0" type="submit">Cargar cobro</button>
+</a> 
+<hr>
+<div class="row mt-4">
+	{% if cobro_individual %}
+	<div class="offset-md-1 col-md-9">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">FECHA DE COBRO</th>
+					<th scope="col">MEDIO DE COBRO</th>
+					<th scope="col">MONEDA</th>
+					<th scope="col">TIPO DE CAMBIO</th>
+					<th scope="col">IMPORTE</th>
+					<th scope="col">ACCION</th>
+				</tr>
+			</thead>
 
-    </div>
+			<tbody>
+				{% for cobro in cobro_individual.cobro.importes_cobros %}  
+					<tr>
+						<th scope="row">{{ cobro.fecha_cobro.strftime('%d-%m-%y') }}</th>
+						<th scope="row">{{ cobro.medio_cobro }}</th>
+						<th scope="row">{{ cobro.moneda }}</th>
+						<th scope="row">{{ cobro.tipo_cambio }}</th>
+						<th scope="row">{{ cobro.importe }}</th>
+						<td>
+							<div class="dropdown">
+								<button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
+									Acción
+							</button>
+							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<li><a class="dropdown-item"  href="{{ url_for('gestiones.modificacion_importe_cobro', id_cobro_individual = cobro.id) }}">Modificar Cobro</a></li>
+								<a class="dropdown-item"  href="#">Eliminar Cobro</a>
+							</div>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>	
+	{% endif %}
 </div>
 
 {% endblock %}

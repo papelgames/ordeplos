@@ -35,8 +35,7 @@ class ModificacionGestionesForm(AltaGestionesForm):
 
 class CobrosForm(FlaskForm):
     importe_total = FloatField('Importe total')
-    moneda = SelectField('Moneda', choices =[( '','Seleccionar moneda'),( "peso",'Pesos'),( "dolar",'Dolar')], coerce = str, default = None, validators=[DataRequired('Seleccione moneda de cobro')])
-    #estado = db.Column(db.Integer)
+    moneda = SelectField('Moneda', choices =[( '','Seleccionar acción'),( "peso",'Pesos'),( "dolar",'Dolar')], coerce = str, default = None, validators=[DataRequired('Seleccione moneda de cobro')])
     observacion = TextAreaField('Observación', validators=[Length(max=256)])
 
 class ImportesCobrosForm(FlaskForm):
@@ -44,7 +43,7 @@ class ImportesCobrosForm(FlaskForm):
     importe = FloatField('Importe cobrado', validators=[DataRequired('Debe cargar el importe cobrado' )])
     tipo_cambio = FloatField('Tipo de cambio')
     moneda = SelectField('Moneda', choices =[( '','Seleccionar acción'),( "peso",'Pesos'),( "dolar",'Dolar')], coerce = str, default = None, validators=[DataRequired('Seleccione moneda de cobro')])
-    medio_cobro = SelectField('Medio de cobro', choices =[( '','Seleccionar medio de cobro'), ( 'Cheque','Cheque'),( 'Transferencia','Transferencia'),( 'Efectivo','Efectivo')], coerce = str, default = None, validators=[DataRequired('Seleccione un medio de cobro')])
+    medio_cobro = SelectField('Medio de cobro', choices =[( '','Seleccionar acción'), ( 'Cheque','Cheque'),( 'Transferencia','Transferencia'),( 'Efectivo','Efectivo')], coerce = str, default = None, validators=[DataRequired('Seleccione un medio de cobro')])
     observacion = TextAreaField('Observación', validators=[Length(max=256)])
 
 class PasoForm(FlaskForm):
