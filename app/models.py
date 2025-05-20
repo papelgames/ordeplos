@@ -111,13 +111,13 @@ class Gestiones (Base):
     def get_like_descripcion_all_paginated(descripcion_, page=1, per_page=20):
         descripcion_ = f"%{descripcion_}%"
         return Gestiones.query.join(
-        Personas, (Gestiones.id_cliente == Personas.id)
+        Personas, (Gestiones.id_persona == Personas.id)
         ).filter(or_(Personas.descripcion_nombre.ilike(descripcion_),)
         ).paginate(page=page, per_page=per_page, error_out=False)    
 
     @staticmethod
-    def get_gestiones_by_id_cliente_all_paginated(id_cliente_, page=1, per_page=20):
-        return Gestiones.query.filter_by(id_cliente = id_cliente_)\
+    def get_gestiones_by_id_cliente_all_paginated(id_persona, page=1, per_page=20):
+        return Gestiones.query.filter_by(id_persona = id_persona)\
             .paginate(page=page, per_page=per_page, error_out=False)
 
 class Cobros (Base):
@@ -434,7 +434,6 @@ class Documentos(Base):
             db.session.add(self)
         db.session.commit()
 
-
 class ModelosDocumentos(Base):
     __tablename__ = "modelosdocumentos"
     id_tipo_documento = db.Column(db.Integer, db.ForeignKey('tiposdocumentos.id'))
@@ -453,10 +452,18 @@ class TiposDocumentos(Base):
     descripcion = db.Column(db.String(50))
     usuario_alta = db.Column(db.String(256))
     usuario_modificacion = db.Column(db.String(256))
-    documentos = db.relationship('Documentos', backref='tipos_documentos', uselist=False)
-    modelos_documentos = db.relationship('ModelosDocumentos', backref='tipos_documentos', uselist=False)
+    documentos = db.relationship('Documentos', backref='tipos_documentos_d', uselist=True)
+    modelos_documentos = db.relationship('ModelosDocumentos', backref='tipos_documentos_md', uselist=True)
 
     def save(self):
         if not self.id:
             db.session.add(self)
         db.session.commit()
+
+    @staticmethod
+    def get_all():
+        return TiposDocumentos.query.all()
+
+    @staticmethod
+    def get_first_by_id(id_tipo_documento):
+        return TiposDocumentos.query.filter_by(id = id_tipo_documento).first()

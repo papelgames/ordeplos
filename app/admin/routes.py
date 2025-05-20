@@ -7,9 +7,9 @@ from werkzeug.utils import secure_filename
 
 from app.auth.decorators import admin_required, not_initial_status, nocache
 from app.auth.models import Users
-from app.models import  Permisos, Roles, Tareas, Personas, TiposGestiones, Estados
+from app.models import  Permisos, Roles, Tareas, Personas, TiposGestiones, Estados, TiposDocumentos, ModelosDocumentos
 from . import admin_bp
-from .forms import UserAdminForm, PermisosUserForm, RolesUserForm, TareasForm, DatosPersonasForm, TiposForm, PermisosForm, RolesForm, PermisosSelectForm, EstadosForm, TareasPorTipoDeGestionForm
+from .forms import UserAdminForm, PermisosUserForm, RolesUserForm, TareasForm, DatosPersonasForm, TiposForm, PermisosForm, RolesForm, PermisosSelectForm, EstadosForm, TareasPorTipoDeGestionForm, DocumentosForm
 
 from app.common.funciones import listar_endpoints
 
@@ -61,6 +61,14 @@ def tareas_select(id_tipo_gestion):
         select_tareas.append(sub_select_tareas)
     return select_tareas
 
+#creo una tupla para usar en el campo select del form que quiera que necesite los tipos de documento
+def tipos_documentos_select():
+    tareas = TiposDocumentos.get_all()
+    select_tp_documentos =[(0,'Seleccionar tipos de documentos')]
+    for rs in tareas:
+        sub_select_tp_documentos = (rs.id, rs.descripcion)
+        select_tp_documentos.append(sub_select_tp_documentos)
+    return select_tp_documentos
 
 @admin_bp.route("/admin/")
 @login_required
@@ -483,3 +491,46 @@ def alta_estados():
     #falta paginar tareas
     estados = Estados.get_all()    
     return render_template("admin/alta_estados.html", form=form, estados=estados)
+
+@admin_bp.route("/admin/altatipodocumentos/", methods = ['GET', 'POST'])
+@login_required
+@admin_required
+@not_initial_status
+def alta_tipo_documento():
+    form = TiposForm()
+    tipos = TiposDocumentos.get_all()
+    if form.validate_on_submit():
+        descripcion = form.tipo.data
+
+        tipo_gestion = TiposDocumentos(descripcion=descripcion)
+
+        tipo_gestion.save()
+        flash("Nuevo tipo de documento creado", "alert-success")
+        return redirect(url_for('admin.alta_tipo_documento'))
+
+    return render_template("admin/alta_tipo_documento.html", form=form, tipos=tipos)
+
+@admin_bp.route("/admin/altadocumentos/", methods = ['GET', 'POST'])
+@login_required
+@admin_required
+@not_initial_status
+def alta_documento_modelo():
+    form = DocumentosForm()
+    form.id_tipo_documento.choices=tipos_documentos_select()
+    campos = [column.name for column in TiposDocumentos.__table__.columns]
+    if form.validate_on_submit():
+       
+        id_tipo_documento = 1 #form.id_tipo_documento.data
+        descripcion = form.descripcion.data
+        contenido_html = form.contenido_html.data
+        tipo_documento = TiposDocumentos.get_first_by_id(id_tipo_documento)
+        print("DEBUG:", id_tipo_documento, descripcion, contenido_html)
+        documento = ModelosDocumentos(descripcion=descripcion,
+                                         texto=contenido_html)
+        print("DEBUG 2:", tipo_documento.descripcion)
+        tipo_documento.modelos_documentos.append(documento)
+        tipo_documento.save()
+        flash("Nuevo tipo de documento creado", "alert-success")
+        return redirect(url_for('admin.alta_documento_modelo'))
+    return render_template("admin/documentos_modelos.html", form=form, campos=campos)
+   

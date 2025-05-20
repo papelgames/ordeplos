@@ -510,3 +510,59 @@ def detalle_gdt():
                            observaciones_gestion_tareas=observaciones_gestion_tareas, 
                            gestion=gestion,
                            hoy=hoy)
+
+
+@gestiones_bp.route("/gestiones/selecciondocumentos/", methods = ['GET', 'POST'])
+@login_required
+@not_initial_status
+@nocache
+def seleccion_documento():
+    id_gestion = request.args.get('id_gestion','')
+    form = PasoForm()
+    gestion = Gestiones.get_by_id(id_gestion)
+
+    if form.validate_on_submit():
+
+        observacion = form.observacion.data
+        
+        observacion_gestion = Observaciones(
+            observacion = observacion,
+            usuario_alta = current_user.username
+
+        )
+
+        if observacion:
+            gestion.observaciones.append(observacion_gestion)
+        gestion.save()
+        flash("Se ha dado de alta un paso en la bitácora correctamente.", "alert-success")
+        return redirect(url_for('consultas.bitacora', id_gestion = id_gestion))
+    
+    return render_template("gestiones/nuevo_paso.html", form = form,  gestion = gestion)
+
+@gestiones_bp.route("/gestiones/documentos/", methods = ['GET', 'POST'])
+@login_required
+@not_initial_status
+@nocache
+def nuevo_paso1():
+    id_gestion = request.args.get('id_gestion','')
+    id_modelo_documento = request.args.get('id_gestion','')
+    form = PasoForm()
+    gestion = Gestiones.get_by_id(id_gestion)
+
+    if form.validate_on_submit():
+
+        observacion = form.observacion.data
+        
+        observacion_gestion = Observaciones(
+            observacion = observacion,
+            usuario_alta = current_user.username
+
+        )
+
+        if observacion:
+            gestion.observaciones.append(observacion_gestion)
+        gestion.save()
+        flash("Se ha dado de alta un paso en la bitácora correctamente.", "alert-success")
+        return redirect(url_for('consultas.bitacora', id_gestion = id_gestion))
+    
+    return render_template("gestiones/nuevo_paso.html", form = form,  gestion = gestion)
