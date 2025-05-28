@@ -1,0 +1,57 @@
+{% extends "base_template.html" %}
+{% from "_render_elements.html" import render_input %}
+
+{% block title %}
+	Ordeplos | Administracion de variables para documentos
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="offset-md-3 col-md-6">
+		<h1 class="display-6s">Administracion de variables para documentos</h1>
+	</div>
+	<div class="offset-md-3 col-md-6">
+		<form action="" method="post" class="mx-auto mt-4" enctype="multipart/form-data" novalidate>	
+            {{ form.hidden_tag() }}
+			<div class="row mb-3">
+				{{ render_input(form.nombre_variable,'', id= "nombre_variable" , placeholder="Nombre de la variable en base de datos" ) }}
+				{{ render_input(form.descripcion_variable,'', id= "descripcion_variable" , placeholder="Describa la variable" ) }}
+			</div>
+			<button type="submit" class="btn btn-primary">Guardar</button>
+		</form>
+	</div>
+</div>
+{% if variables %}
+	<div class="offset-md-3 col-md-6">
+		<table class="table table-striped table-hover mb-4">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>VARIABLE</th>
+					<th>DESCRIPCION DE VARIABLE</th>
+					<th>ACCION</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for variable in variables %}
+					<tr>
+						<th> {{ variable.id }}</th>
+						<td> {{ variable.nombre_variable }}</td>
+						<td> {{ variable.descripcion_variable }}</td>
+						<td>
+							<div class="dropdown">
+								<button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
+									Acción
+								</button>
+								<ul class="dropdown-menu">
+									<li><a class="dropdown-item" href="{{ url_for('admin.modificar_variable', id_variable = variable.id) }}">Modificar</a></li>
+									<li><a class="dropdown-item" href="{{ url_for('admin.eliminar_variable', id_variable = variable.id) }}">Eliminar</a></li>
+								</ul>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endif %}
+{% endblock %}

@@ -9,12 +9,12 @@ from flask_login import login_required, current_user
 
 from app.auth.decorators import admin_required, not_initial_status, nocache
 from app.auth.models import Users
-from app.models import Personas, TiposGestiones, Gestiones, Observaciones, Cobros, ImportesCobros, Tareas, GestionesDeTareas, PersonasEnGestiones
+from app.models import Personas, TiposGestiones, Gestiones, Observaciones, Cobros, ImportesCobros, Tareas, GestionesDeTareas, PersonasEnGestiones, ModelosDocumentos, Documentos, VariablesDocumentos
 from . import gestiones_bp 
-from .forms import AltaGestionesForm,AltaGestionesPersonasForm, BusquedaForm, CobrosForm, ImportesCobrosForm, PasoForm, GestionesTareasForm, DetallesGdTForm
+from .forms import AltaGestionesForm,AltaGestionesPersonasForm, BusquedaForm, CobrosForm, ImportesCobrosForm, PasoForm, GestionesTareasForm, DetallesGdTForm, DocumentosForm
 
 from app.common.mail import send_email
-from app.common.funciones import generar_cuil_cuit
+from app.common.funciones import generar_cuil_cuit, renderizar_modelo_con_instancia
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +39,15 @@ def tareas_select(id_gestion):
         sub_select_tareas = (rs.id, rs.descripcion)
         select_tareas.append(sub_select_tareas)
     return select_tareas
+
+#creo una tupla para usar en el campo select del form que quiera que necesite las tareas
+def modelos_documentos_select():
+    modelos_documentos = ModelosDocumentos.get_all()
+    select_modelos_documentos =[(0,'Seleccionar modelo de documento')]
+    for rs in modelos_documentos:
+        sub_select_modelos_documentos = (rs.id, rs.descripcion)
+        select_modelos_documentos.append(sub_select_modelos_documentos)
+    return select_modelos_documentos
 
 @gestiones_bp.route("/gestiones/altagestiones/", methods = ['GET', 'POST'])
 @login_required
@@ -512,57 +521,37 @@ def detalle_gdt():
                            hoy=hoy)
 
 
-@gestiones_bp.route("/gestiones/selecciondocumentos/", methods = ['GET', 'POST'])
-@login_required
-@not_initial_status
-@nocache
-def seleccion_documento():
-    id_gestion = request.args.get('id_gestion','')
-    form = PasoForm()
-    gestion = Gestiones.get_by_id(id_gestion)
-
-    if form.validate_on_submit():
-
-        observacion = form.observacion.data
-        
-        observacion_gestion = Observaciones(
-            observacion = observacion,
-            usuario_alta = current_user.username
-
-        )
-
-        if observacion:
-            gestion.observaciones.append(observacion_gestion)
-        gestion.save()
-        flash("Se ha dado de alta un paso en la bitácora correctamente.", "alert-success")
-        return redirect(url_for('consultas.bitacora', id_gestion = id_gestion))
-    
-    return render_template("gestiones/nuevo_paso.html", form = form,  gestion = gestion)
-
 @gestiones_bp.route("/gestiones/documentos/", methods = ['GET', 'POST'])
 @login_required
 @not_initial_status
 @nocache
-def nuevo_paso1():
+def nuevo_documento():
+    print('paso')
     id_gestion = request.args.get('id_gestion','')
-    id_modelo_documento = request.args.get('id_gestion','')
-    form = PasoForm()
-    gestion = Gestiones.get_by_id(id_gestion)
-
-    if form.validate_on_submit():
-
-        observacion = form.observacion.data
+    id_modelo_documento = request.args.get('id_modelo_documento','')
+    form = DocumentosForm()
         
-        observacion_gestion = Observaciones(
-            observacion = observacion,
-            usuario_alta = current_user.username
-
-        )
-
-        if observacion:
-            gestion.observaciones.append(observacion_gestion)
-        gestion.save()
-        flash("Se ha dado de alta un paso en la bitácora correctamente.", "alert-success")
-        return redirect(url_for('consultas.bitacora', id_gestion = id_gestion))
-    
-    return render_template("gestiones/nuevo_paso.html", form = form,  gestion = gestion)
+    gestion = Gestiones.get_by_id(id_gestion)
+    form.id_modelo_documento.choices = modelos_documentos_select()
+    if form.validate_on_submit():
+        if not form.texto.data:
+            id_modelo_documento = form.id_modelo_documento.data
+            return redirect(url_for('gestiones.nuevo_documento', id_modelo_documento=id_modelo_documento, id_gestion=id_gestion))
+        else:
+            documento= ModelosDocumentos.get_first_by_id(int(id_modelo_documento))
+            texto = form.texto.data
+            nuevo_documento = Documentos(id_tipo_documento = documento.id_tipo_documento,
+                                         texto = texto,
+                                         usuario_alta = current_user.username,
+                                         usuario_modificacion = current_user.username)
+            gestion.documentos.append(nuevo_documento)
+            gestion.save()
+            flash("Se ha dado de alta un documento correctamente", "alert-success")
+            return redirect(url_for('consultas.lista_gestiones'))
+    if id_modelo_documento: 
+        documento = ModelosDocumentos.get_first_by_id(id_modelo_documento)
+        campos_disponibles = VariablesDocumentos.get_variables()
+        documento_formateado = renderizar_modelo_con_instancia(campos_disponibles, documento.texto, gestion )
+        return render_template("gestiones/documentos.html", form = form,  documento_formateado=documento_formateado, gestion = gestion, documento=documento)    
+        
+    return render_template("gestiones/documentos.html", form = form,  gestion = gestion)

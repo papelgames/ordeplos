@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estudio Jurídico P.S. Díaz & Asociados</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --dorado-suave: #C9A66B;
+      --gris-claro: #f8f9fa;
+      --gris-oscuro: #343a40;
+      --blanco: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background-color: var(--gris-claro);
+      color: var(--gris-oscuro);
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: var(--blanco);
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      color: var(--dorado-suave);
+      font-size: 1.8rem;
+    }
+
+    nav {
+      margin-top: 0.5rem;
+    }
+
+    nav a {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: var(--gris-oscuro);
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: var(--dorado-suave);
+    }
+
+    section {
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    section.hero {
+      background: url('https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80') center/cover no-repeat fixed;
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      color: var(--gris-oscuro);
+    }
+
+    section.hero::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.7); /* Capa blanca semitransparente */
+      z-index: 1;
+    }
+
+    section.hero h2, section.hero p {
+      position: relative;
+      z-index: 2;
+    }
+
+    section.hero h2 {
+      font-size: 2.5rem;
+      color: var(--dorado-suave);
+    }
+
+    section.hero p {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      max-width: 600px;
+    }
+
+    .especialidades, .socios, .contacto {
+      background-color: var(--blanco);
+      margin: 2rem auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      max-width: 1200px;
+      padding: 2rem;
+    }
+
+    .especialidades h3, .socios h3, .contacto h3 {
+      color: var(--dorado-suave);
+      margin-bottom: 1.5rem;
+    }
+
+    .especialidades ul, .socios ul {
+      list-style: none;
+    }
+
+    .especialidades li, .socios li {
+      margin: 0.5rem 0;
+      font-weight: 400;
+    }
+
+    footer {
+      background-color: var(--gris-oscuro);
+      color: var(--blanco);
+      text-align: center;
+      padding: 1.5rem 1rem;
+      margin-top: 2rem;
+    }
+
+    .rrss a {
+      margin: 0 10px;
+      color: var(--dorado-suave);
+      font-size: 1.5rem;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .rrss a:hover {
+      color: var(--blanco);
+    }
+
+    @media (min-width: 768px) {
+      nav {
+        text-align: right;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>P.S. Díaz & Asociados</h1>
+  <nav>
+    <a href="#especialidades">Especialidades</a>
+    <a href="#socios">Socios</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h2>Defendemos tus derechos</h2>
+  <p>Comprometidos con la excelencia jurídica y la confianza de nuestros clientes.</p>
+</section>
+
+<section id="especialidades" class="especialidades">
+  <h3>Especialidades</h3>
+  <ul>
+    <li>Derecho Civil y Comercial</li>
+    <li>Derecho Laboral</li>
+    <li>Derecho de Familia</li>
+    <li>Asesoramiento Empresarial</li>
+    <li>Litigios y Mediaciones</li>
+  </ul>
+</section>
+
+<section id="socios" class="socios">
+  <h3>Socios</h3>
+  <ul>
+    <li>Dra. Paula Díaz - Socia Fundadora</li>
+    <li>Dr. Juan Pérez - Socio</li>
+    <li>Dra. Laura Fernández - Socia</li>
+  </ul>
+</section>
+
+<section id="contacto" class="contacto">
+  <h3>Contacto y Redes Sociales</h3>
+  <div class="rrss">
+    <a href="#" title="Instagram">📸</a>
+    <a href="#" title="Facebook">📘</a>
+    <a href="#" title="Google Perfil">📍</a>
+  </div>
+</section>
+
+<footer>
+  &copy; 2025 Estudio Jurídico P.S. Díaz & Asociados. Todos los derechos reservados.
+</footer>
+
+</body>
+</html>

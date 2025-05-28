@@ -82,7 +82,17 @@ document.addEventListener("DOMContentLoaded", function () {
     if (form) {
         form.onsubmit = function () {
             var html = quill.root.innerHTML;
-            document.querySelector('#contenido_html').value = html;
+            document.querySelector('#texto').value = html;
         };
     }
 });
+
+//funcion para insertar 
+function insertarVariable(campo) {
+    if (!campo) return;
+    const variable = `{{ ${campo} }}`;
+    const quill = Quill.find(document.querySelector('#editor'));
+    const range = quill.getSelection(true);
+    quill.insertText(range.index, variable, 'user');
+    document.querySelector("#variables").value = "";
+}

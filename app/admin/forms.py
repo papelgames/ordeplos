@@ -60,4 +60,10 @@ class EstadosForm(FlaskForm):
 class DocumentosForm(FlaskForm):    
     id_tipo_documento = SelectField('Tipo de documento', choices =[], coerce = int, validators=[NumberRange(min=1, message="Debe ingresar una tipo de documento")])
     descripcion =StringField('Descripcion de documento', validators=[DataRequired('Escriba una descripción' ),Length(max=50)])
-    contenido_html = HiddenField('contenido_html')
+    texto = HiddenField('texto')
+
+class VariablesDocumentosForm(FlaskForm):
+    nombre_variable = StringField('Nombre de la variable', validators=[DataRequired('Escriba una descripción'),Length(max=100)])
+    descripcion_variable = StringField('Descripcion de la variable', validators=[DataRequired('Escriba una descripción'),Length(max=50)])
+    
+    

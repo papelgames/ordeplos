@@ -7,11 +7,11 @@ from werkzeug.utils import secure_filename
 
 from app.auth.decorators import admin_required, not_initial_status, nocache
 from app.auth.models import Users
-from app.models import  Permisos, Roles, Tareas, Personas, TiposGestiones, Estados, TiposDocumentos, ModelosDocumentos
+from app.models import  Permisos, Roles, Tareas, Personas, TiposGestiones, Estados, TiposDocumentos, ModelosDocumentos, VariablesDocumentos
 from . import admin_bp
-from .forms import UserAdminForm, PermisosUserForm, RolesUserForm, TareasForm, DatosPersonasForm, TiposForm, PermisosForm, RolesForm, PermisosSelectForm, EstadosForm, TareasPorTipoDeGestionForm, DocumentosForm
+from .forms import UserAdminForm, PermisosUserForm, RolesUserForm, TareasForm, DatosPersonasForm, TiposForm, PermisosForm, RolesForm, PermisosSelectForm, EstadosForm, TareasPorTipoDeGestionForm, DocumentosForm, VariablesDocumentosForm
 
-from app.common.funciones import listar_endpoints
+from app.common.funciones import listar_endpoints, renderizar_modelo_con_instancia
 
 
 logger = logging.getLogger(__name__)
@@ -69,6 +69,15 @@ def tipos_documentos_select():
         sub_select_tp_documentos = (rs.id, rs.descripcion)
         select_tp_documentos.append(sub_select_tp_documentos)
     return select_tp_documentos
+
+#creo una tupla para usar en el campo select del form que quiera que necesite los las variables vigentes
+def variables_select():
+    variables = VariablesDocumentos.get_all()
+    select_variables =[('','Seleccionar variable')]
+    for rs in variables:
+        sub_select_variables = (rs.nombre_variable, rs.descripcion_variable)
+        select_variables.append(sub_select_variables)
+    return select_variables
 
 @admin_bp.route("/admin/")
 @login_required
@@ -384,7 +393,7 @@ def alta_tarea():
     tareas = Tareas.get_all()    
     return render_template("admin/alta_tarea.html", form=form, tareas=tareas)
 
-@admin_bp.route("/admin/modificatarea/", methods = ['GET', 'POST'])
+@admin_bp.route("/admin/modificartarea/", methods = ['GET', 'POST'])
 @login_required
 @admin_required
 @not_initial_status
@@ -510,6 +519,14 @@ def alta_tipo_documento():
 
     return render_template("admin/alta_tipo_documento.html", form=form, tipos=tipos)
 
+@admin_bp.route("/admin/listadocumentosmodelos/")
+@login_required
+@not_initial_status
+def lista_documentos_modelos():
+    documentos = ModelosDocumentos.get_all_paginated()
+    
+    return render_template("admin/consulta_modelos_documentos.html", documentos = documentos)
+    
 @admin_bp.route("/admin/altadocumentos/", methods = ['GET', 'POST'])
 @login_required
 @admin_required
@@ -517,20 +534,95 @@ def alta_tipo_documento():
 def alta_documento_modelo():
     form = DocumentosForm()
     form.id_tipo_documento.choices=tipos_documentos_select()
-    campos = [column.name for column in TiposDocumentos.__table__.columns]
+    campos_disponibles = variables_select()
     if form.validate_on_submit():
-       
-        id_tipo_documento = 1 #form.id_tipo_documento.data
+
+        id_tipo_documento = form.id_tipo_documento.data
         descripcion = form.descripcion.data
-        contenido_html = form.contenido_html.data
+        texto = form.texto.data
         tipo_documento = TiposDocumentos.get_first_by_id(id_tipo_documento)
-        print("DEBUG:", id_tipo_documento, descripcion, contenido_html)
         documento = ModelosDocumentos(descripcion=descripcion,
-                                         texto=contenido_html)
-        print("DEBUG 2:", tipo_documento.descripcion)
+                                         texto=texto,
+                                         usuario_alta=current_user.username)
         tipo_documento.modelos_documentos.append(documento)
         tipo_documento.save()
         flash("Nuevo tipo de documento creado", "alert-success")
         return redirect(url_for('admin.alta_documento_modelo'))
-    return render_template("admin/documentos_modelos.html", form=form, campos=campos)
+    return render_template("admin/documentos_modelos.html", form=form, campos_disponibles=campos_disponibles)
+
+@admin_bp.route("/admin/modificardocumentos/", methods = ['GET', 'POST'])
+@login_required
+@admin_required
+@not_initial_status
+def modificar_documento_modelo():
+    id_modelo_documento = request.args.get('id_modelo_documento','')
+    
+    documento = ModelosDocumentos.get_first_by_id(id_modelo_documento)
+    form = DocumentosForm(obj=documento)
+    form.id_tipo_documento.choices=tipos_documentos_select()
+    campos_disponibles = variables_select()
    
+    if form.validate_on_submit():
+        form.populate_obj(documento)
+        documento.usuario_modificacion = current_user.username
+        documento.save()
+        flash("Se ha modificado el documento", "alert-success")
+        return redirect(url_for('admin.alta_documento_modelo'))
+    return render_template("admin/documentos_modelos.html", form=form, campos_disponibles=campos_disponibles, documento=documento)
+
+@admin_bp.route("/admin/administracionvariables/", methods = ['GET', 'POST'])
+@login_required
+@admin_required
+@not_initial_status
+def administracion_variables():
+    form = VariablesDocumentosForm()
+    
+    if form.validate_on_submit():
+        nombre_variable = form.nombre_variable.data
+        descripcion_variable = form.descripcion_variable.data
+        
+        variable = VariablesDocumentos(nombre_variable=nombre_variable,
+                         descripcion_variable=descripcion_variable
+                         )
+        
+        variable.save()
+        flash("Nueva variable creada", "alert-success")
+        return redirect(url_for('admin.administracion_variables'))
+    #falta paginar tareas
+    variables = VariablesDocumentos.get_all()    
+    return render_template("admin/administracion_variables.html", form=form, variables=variables)
+
+@admin_bp.route("/admin/modificarvariable/", methods = ['GET', 'POST'])
+@login_required
+@admin_required
+@not_initial_status
+def modificar_variable():
+    id_variable = request.args.get('id_variable','')
+    
+    variable = VariablesDocumentos.get_first_by_id(id_variable)
+        
+    form = VariablesDocumentosForm(obj=variable)
+    
+    if form.validate_on_submit():
+        form.populate_obj(variable)
+        variable.usuario_modificacion = current_user.username
+        variable.save()
+        flash("La variable ha sido actualizada", "alert-success")
+        return redirect(url_for('admin.administracion_variables'))
+    
+    # for campo in list(request.form.items())[1:]:
+    #     data_campo = getattr(form,campo[0]).data
+    #     setattr(tarea,campo[0], data_campo)
+  
+    return render_template("admin/administracion_variables.html", form=form, variable=variable)
+
+@admin_bp.route("/admin/eliminarvariable/", methods=['GET', 'POST'])
+@login_required
+@admin_required
+@not_initial_status
+def eliminar_variable():
+    id_variable = request.args.get('id_variable','')
+    variables = VariablesDocumentos.get_first_by_id(id_variable)
+    variables.delete()    
+    flash ('Variable eliminada correctamente del rol', 'alert-success')
+    return redirect(url_for('admin.administracion_variables'))

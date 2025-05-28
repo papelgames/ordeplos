@@ -18,13 +18,23 @@
 			<div class="row mb-3">
 				{{ render_input(form.id_tipo_documento,'', id= "id_tipo_documento"  ) }}
 				{{ render_input(form.descripcion,'', id= "descripcion" , placeholder="Breve descripcion del documento a crear" ) }}
+				{% if documento %}
+				<div id="editor">{{ documento.texto|safe }}</div>
+                {% else %}
 				<div id="editor"></div>
-                
-                {{ form.contenido_html(id="contenido_html") }}
+				{% endif %}
+
+                {{ form.texto(id="texto") }}
 			</div>
 			<button type="submit" class="btn btn-primary">Guardar</button>
 		</form>
+
+  <label for="variables">Insertar variable:</label>
+  <select id="variables" class="form-select" onchange="insertarVariable(this.value)">
+    {% for campo in campos_disponibles %}
+      <option value="{{ campo[0] }}">{{ campo[1] }}</option>
+    {% endfor %}
+  </select>
 	</div>
 </div>
-{{campos}}
 {% endblock %}

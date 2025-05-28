@@ -1,0 +1,74 @@
+{% extends "base_template.html" %}
+{% from "_render_elements.html" import render_input %}
+
+{% block title %}
+    Ordeplos | Consulta de modelos de documentos
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="offset-md-3 col-md-6">
+		<h1>Consulta de modelos de documentos</h1>
+
+	</div>
+</div>
+{% if documentos.items %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">TIPO DE DOCUMENTO</th>
+            <th scope="col">DESCRIPCION</th>
+            <th scope="col">ACCION</th> 
+        </tr>
+    </thead>
+    
+    <tbody>
+        {% for documento in documentos.items %}
+            <tr>
+                <th scope="row">{{ documento.id }}</th>
+                <td> {{ documento.tipos_documentos_md.descripcion }}</td>
+                <td> {{ documento.descripcion  }} </td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                            Acción
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item"  href="{{ url_for('admin.modificar_documento_modelo', id_modelo_documento= documento.id ) }}">Modificar</a></li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation example">
+	<ul class="pagination justify-content-center">
+            <!-- <li class="page-item disabled">
+                <a class="page-link" href="#">Anterior</a>
+            </li> -->
+        {%- for page in documentos.iter_pages() %}
+			{% if page %}
+
+				{% if page != documentos.page %}
+					<li class="page-item"><a class="page-link" href="{{ url_for('admin.lista_documentos_modelos', page=page) }}">{{ page }}</a>
+				{% else %}
+					<li class="page-item active">
+						<span class="page-link">
+							{{ page }}
+							<span class="sr-only"></span>
+						</span>
+					</li>
+                {% endif %}
+			{% endif %}
+		{%- endfor %}
+        <!-- <li class="page-item">
+            <a class="page-link" href="#">Siguiente</a>
+        </li> -->
+	</ul>
+</nav>
+
+{% endif %}
+
+{% endblock %}

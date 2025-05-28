@@ -91,7 +91,7 @@ class Gestiones (Base):
     observaciones = db.relationship('Observaciones', backref='gestiones', uselist=True, lazy=True)
     gestiones_de_tareas = db.relationship('GestionesDeTareas', backref='gestiones', uselist=True, lazy=True)
     gestiones_en_personas = db.relationship('Personas', secondary='personasengestiones', back_populates='personas_en_gestiones')
-    documentos = db.relationship('Documentos', backref='gestiones', uselist=False)
+    documentos = db.relationship('Documentos', backref='gestiones', uselist=True)
     cobro = db.relationship('Cobros', backref='cobros', uselist=False)
     
     def save(self):
@@ -446,6 +446,17 @@ class ModelosDocumentos(Base):
         if not self.id:
             db.session.add(self)
         db.session.commit()
+    @staticmethod
+    def get_all():
+        return ModelosDocumentos.query.all()
+   
+    @staticmethod
+    def get_first_by_id(id_documento):
+        return ModelosDocumentos.query.filter_by(id = id_documento).first()
+
+    @staticmethod
+    def get_all_paginated(page=1, per_page=20):
+        return ModelosDocumentos.query.paginate(page=page, per_page=per_page, error_out=False)
 
 class TiposDocumentos(Base):
     __tablename__ = "tiposdocumentos"
@@ -467,3 +478,33 @@ class TiposDocumentos(Base):
     @staticmethod
     def get_first_by_id(id_tipo_documento):
         return TiposDocumentos.query.filter_by(id = id_tipo_documento).first()
+
+class VariablesDocumentos (Base):
+    __tablename__ = "variablesdocumentos"
+    nombre_variable = db.Column(db.String(100))
+    descripcion_variable = db.Column(db.String(50))
+    usuario_alta = db.Column(db.String(256))
+    usuario_modificacion = db.Column(db.String(256))
+
+    def save(self):
+        if not self.id:
+            db.session.add(self)
+        db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+    
+    @staticmethod
+    def get_all():
+        return VariablesDocumentos.query.all()
+    
+    @staticmethod
+    def get_first_by_id(id_variable):
+        return VariablesDocumentos.query.filter_by(id = id_variable).first()
+    
+    @staticmethod
+    def get_variables():
+        resultados = db.session.query(VariablesDocumentos.nombre_variable).all()
+        return [r[0] for r in resultados]
+        

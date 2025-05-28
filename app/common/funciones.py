@@ -1,5 +1,6 @@
 from app.models import Estados
 from flask_login import current_user
+from jinja2 import Template
 
 def listar_endpoints(app):
     """
@@ -47,3 +48,14 @@ def generar_cuil_cuit(dni: int, genero: str) -> str:
 
     return f"{prefijo}{dni_str}{verificador}"
 
+
+def renderizar_modelo_con_instancia(campos_modelo, texto_modelo, instancia):
+    context = {}
+    for campo in campos_modelo:
+        try:
+            valor = eval(f"instancia.{campo}")
+            context[campo] = valor
+        except Exception:
+            context[campo] = ""
+    template = Template(texto_modelo)
+    return template.render(**context)

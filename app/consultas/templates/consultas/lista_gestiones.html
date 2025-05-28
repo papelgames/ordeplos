@@ -43,6 +43,7 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item"  href="{{ url_for('gestiones.modificacion_gestiones', id_gestion = gestion.id) }}">Modificar gestión</a></li>
                             <li><a class="dropdown-item"  href="{{ url_for('gestiones.alta_cobros_cabecera', id_gestion = gestion.id) }}">Crear presupuesto cobro</a></li>
+                            <li><a class="dropdown-item"  href="{{ url_for('gestiones.nuevo_documento', id_gestion = gestion.id) }}">Agregar un documento</a></li>
                             <li><a class="dropdown-item"  href="{{ url_for('gestiones.gestiones_tareas', id_gestion = gestion.id) }}">Tareas</a></li>
                             <li><a class="dropdown-item"  href="{{ url_for('consultas.tareas_pendientes', id_gestion = gestion.id) }}">Tareas pendientes</a></li>
                             <li><a class="dropdown-item"  href="{{ url_for('consultas.cobro', id_gestion = gestion.id) }}">Ver presupuesto cobro</a></li>
@@ -104,6 +105,7 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item"  href="{{ url_for('gestiones.modificacion_gestiones', id_gestion = gestiones.id) }}">Modificar gestión</a></li>
                         <li><a class="dropdown-item"  href="{{ url_for('gestiones.alta_cobros_cabecera', id_gestion = gestiones.id) }}">Crear presupuesto cobro</a></li>
+                        <li><a class="dropdown-item"  href="{{ url_for('gestiones.nuevo_documento', id_gestion = gestiones.id) }}">Agregar un documento</a></li>
                         <li><a class="dropdown-item"  href="{{ url_for('gestiones.gestiones_tareas', id_gestion = gestiones.id) }}">Tareas</a></li>
                         <li><a class="dropdown-item"  href="{{ url_for('consultas.cobro', id_gestion = gestiones.id) }}">Ver presupuesto cobro</a></li>
                         <li><a class="dropdown-item"  href="{{ url_for('consultas.caratula', id_gestion = gestiones.id)}} ">Carátula</a></li>
