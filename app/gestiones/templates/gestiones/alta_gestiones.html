@@ -26,11 +26,16 @@
                     <div class="form-group">
                         {{ render_input(form.correo_electronico,'', id= "correo_electronico" , class="form-control", placeholder="Ingrese correo electronico del cliente" ) }}
                     </div>
-                </div>
-                <div class="col-md-6">
-
                     <div class="form-group">
                         {{ render_input(form.telefono, '', id="telefono",  class="form-control", placeholder="Ingrese el telefono") }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{ render_input(form.direccion, '', id="direccion",  class="form-control", placeholder="Ingrese el domicilio") }}
+                    </div>
+                    <div class="form-group">
+                        {{ render_input(form.localidad, '', id="localidad",  class="form-control", placeholder="Ingrese la localidad", list="lista_localidades", autocomplete="off") }}
                     </div>
                     <div class="form-group">
                         {{ render_input(form.dni,'', id= "dni" , class="form-control", placeholder="Ingrese el DNI") }}
@@ -45,12 +50,12 @@
                 +
             </button>
             <div class="form-group">
-                {{ render_input(form.origen, '', id="origen", class="form-control", placeholder="Elija el origen del cliente", list="titulares", autocomplete="off" ) }}
+                {{ render_input(form.origen, '', id="origen", class="form-control", placeholder="Elija el origen del cliente", list="lista_origen", autocomplete="off" ) }}
             </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        {{ render_input(form.fecha_cita,'', id= "fecha_cita", value=hoy.strftime('%Y-%m-%d'), class="form-control", type="date"  ) }}
+                        {{ render_input(form.fecha_cita,'', id= "fecha_cita",  class="form-control", type="date"  ) }}
                     </div>
                     <div class="form-group">
                         {{ render_input(form.cita,'', id= "cita" ,class="form-check-input") }}
@@ -59,7 +64,7 @@
                 <div class="col-md-6">
 
                     <div class="form-group">
-                        {{ render_input(form.fecha_inicio_gestion, '', id="fecha_inicio_gestion", value=hoy.strftime('%Y-%m-%d'), class="form-control", type="date") }}
+                        {{ render_input(form.fecha_inicio_gestion, '', id="fecha_inicio_gestion",  class="form-control", type="date") }}
                     </div>
                     <div class="form-group">
                         {{ render_input(form.id_tipo_gestion,'', id= "id_tipo_gestion" , class="form-control") }}
@@ -96,11 +101,15 @@
     </div>
   </div>
 
-<datalist id="titulares">
-    {% for titular in clientes %}
-    <option  value="{{ titular.descripcion_nombre}}">
+<datalist id="lista_origen">
+    {% for origen in origen_gestion %}
+    <option  value="{{ origen.descripcion_nombre}}">
     {% endfor %}
 </datalist>
-
+<datalist id="lista_localidades">
+    {% for localidad in localidades %}
+    <option  value="{{localidad.id}} | {{ localidad.localidad }} | {{ localidad.provincia }} ">
+    {% endfor %}
+</datalist>
 
 {% endblock %}

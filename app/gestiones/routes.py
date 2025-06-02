@@ -9,7 +9,7 @@ from flask_login import login_required, current_user
 
 from app.auth.decorators import admin_required, not_initial_status, nocache
 from app.auth.models import Users
-from app.models import Personas, TiposGestiones, Gestiones, Observaciones, Cobros, ImportesCobros, Tareas, GestionesDeTareas, PersonasEnGestiones, ModelosDocumentos, Documentos, VariablesDocumentos
+from app.models import Personas, TiposGestiones, Gestiones, Observaciones, Cobros, ImportesCobros, Tareas, GestionesDeTareas, PersonasEnGestiones, ModelosDocumentos, Documentos, VariablesDocumentos, Localidades
 from . import gestiones_bp 
 from .forms import AltaGestionesForm,AltaGestionesPersonasForm, BusquedaForm, CobrosForm, ImportesCobrosForm, PasoForm, GestionesTareasForm, DetallesGdTForm, DocumentosForm
 
@@ -55,11 +55,17 @@ def modelos_documentos_select():
 @nocache
 def alta_gestiones():
     id_cliente = request.args.get('id_cliente','')
-    clientes = Personas.get_all()
+    origen_gestion = Personas.get_all()
+    localidades = Localidades.get_all()
     persona = Personas.get_by_id(id_cliente)
-    hoy = datetime.today()
     form = AltaGestionesPersonasForm(obj=persona)                                                                                                                   
     form.id_tipo_gestion.choices = tipo_gestion_select()
+    if request.method == "GET":
+        # Solo setea fecha si no tiene nada (primera carga)
+        if not form.fecha_cita.data:
+            form.fecha_cita.data = date.today()
+        if not form.fecha_inicio_gestion.data:
+            form.fecha_inicio_gestion.data = date.today()
 
     if not id_cliente:
         con_persona = False
@@ -71,6 +77,8 @@ def alta_gestiones():
             telefono = form.telefono.data
             dni = form.dni.data
             cuit = form.cuit.data
+            direccion = form.direccion.data
+            localidad = form.localidad.data.split('|')
             origen = form.origen.data
             fecha_inicio_gestion = form.fecha_inicio_gestion.data
             id_tipo_gestion = form.id_tipo_gestion.data
@@ -89,7 +97,9 @@ def alta_gestiones():
                                     correo_electronico=correo_electronico,
                                     telefono=telefono,
                                     dni=dni,
-                                    cuit=cuit)
+                                    cuit=cuit,
+                                    direccion=direccion,
+                                    id_localidad=localidad[0])
 
             nueva_gestion = Gestiones(origen = origen,
                                     fecha_inicio_gestion = fecha_inicio_gestion,
@@ -160,7 +170,7 @@ def alta_gestiones():
 
             flash("Se ha creado la gestion correctamente.", "alert-success")
             return redirect(url_for('consultas.caratula', id_gestion = nueva_gestion.id))
-    return render_template("gestiones/alta_gestiones.html", form = form, clientes = clientes, hoy=hoy, con_persona=con_persona)
+    return render_template("gestiones/alta_gestiones.html", form=form, origen_gestion=origen_gestion, localidades=localidades, con_persona=con_persona)
 
 @gestiones_bp.route("/gestiones/gestiones/", methods = ['GET', 'POST'])
 @login_required
@@ -394,6 +404,7 @@ def modificacion_gestiones():
     if not id_gestion:
         return redirect(url_for('gestiones.gestiones'))
     gestion = Gestiones.get_by_id(id_gestion)
+    print (gestion.personas.localidades.localidad)
     form = AltaGestionesForm(obj=gestion)                                                                                                                   
     clientes = Personas.get_all()
     form.id_tipo_gestion.choices = tipo_gestion_select()
@@ -526,7 +537,7 @@ def detalle_gdt():
 @not_initial_status
 @nocache
 def nuevo_documento():
-    print('paso')
+  
     id_gestion = request.args.get('id_gestion','')
     id_modelo_documento = request.args.get('id_modelo_documento','')
     form = DocumentosForm()

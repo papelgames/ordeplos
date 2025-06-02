@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 
 from app.auth.decorators import admin_required, not_initial_status, nocache
 from app.auth.models import Users
-from app.models import  Permisos, Roles, Tareas, Personas, TiposGestiones, Estados, TiposDocumentos, ModelosDocumentos, VariablesDocumentos
+from app.models import  Permisos, Roles, Tareas, Personas, TiposGestiones, Estados, TiposDocumentos, ModelosDocumentos, VariablesDocumentos, Localidades
 from . import admin_bp
 from .forms import UserAdminForm, PermisosUserForm, RolesUserForm, TareasForm, DatosPersonasForm, TiposForm, PermisosForm, RolesForm, PermisosSelectForm, EstadosForm, TareasPorTipoDeGestionForm, DocumentosForm, VariablesDocumentosForm
 
@@ -210,6 +210,7 @@ def eliminar_permiso_usuario():
 @nocache
 def alta_persona():
     form = DatosPersonasForm()                                                                                                                   
+    localidades = Localidades.get_all()
 
     if form.validate_on_submit():
         descripcion_nombre = form.descripcion_nombre.data
@@ -217,19 +218,27 @@ def alta_persona():
         telefono = form.telefono.data
         cuit = form.cuit.data
         tipo_persona = form.tipo_persona.data 
+        genero=form.genero.data
+        direccion=form.direccion.data
+        id_localidad=form.id_localidad.data.split('|')
+
         nota = form.nota.data
 
         persona = Personas(descripcion_nombre= descripcion_nombre,
                            correo_electronico = correo_electronico,
                            telefono = telefono,
-                           cuit = cuit,
+                           dni = cuit[2:10],
+                           cuit = cuit, 
                            tipo_persona = tipo_persona,
+                           genero = genero,
+                           direccion=direccion,
+                           id_localidad=id_localidad[0],
                            nota = nota,
                            usuario_alta = current_user.username)
         persona.save()
         flash("Se ha creado la persona correctamente.", "alert-success")
         return redirect(url_for('consultas.consulta_personas'))
-    return render_template("admin/datos_persona.html", form = form)
+    return render_template("admin/datos_persona.html", form = form, localidades=localidades)
 
 @admin_bp.route("/admin/actualizacionpersona/", methods = ['GET', 'POST'])
 @login_required
@@ -237,17 +246,22 @@ def alta_persona():
 def actualizacion_persona():
     id_persona = request.args.get('id_persona','')
     persona = Personas.get_by_id(id_persona)
+    localidades = Localidades.get_all()
     form=DatosPersonasForm(obj=persona)
+    
+    if request.method == "GET":
+        id_localidad_original=Localidades.get_by_id(persona.id_localidad)
+        if id_localidad_original:
+            form.id_localidad.data = f"{id_localidad_original.id} | {id_localidad_original.localidad} | {id_localidad_original.provincia}"
     if form.validate_on_submit():
         form.populate_obj(persona)
+        localidad = form.id_localidad.data.split('|')
+        
+        persona.id_localidad = localidad[0].strip()
         persona.save()
         flash("Se ha actualizado la persona correctamente.", "alert-success")
         return redirect(url_for('consultas.consulta_personas'))
-    
-    for campo in list(request.form.items())[1:]:
-        data_campo = getattr(form,campo[0]).data
-        setattr(persona,campo[0], data_campo)
-    return render_template("admin/datos_persona.html", form=form, persona = persona)
+    return render_template("admin/datos_persona.html", form=form, localidades=localidades, persona=persona)
 
 @admin_bp.route("/admin/altatipogestiones/", methods = ['GET', 'POST'])
 @login_required

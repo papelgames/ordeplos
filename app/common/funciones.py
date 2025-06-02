@@ -1,6 +1,11 @@
 from app.models import Estados
 from flask_login import current_user
 from jinja2 import Template
+from datetime import datetime
+import locale
+
+# Configurás el locale en español para las fechas
+locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 def listar_endpoints(app):
     """
@@ -48,14 +53,25 @@ def generar_cuil_cuit(dni: int, genero: str) -> str:
 
     return f"{prefijo}{dni_str}{verificador}"
 
+def set_nested_value(dic, keys, value):
+    """Asigna un valor a un diccionario anidado, creando los niveles intermedios si no existen."""
+    for key in keys[:-1]:
+        dic = dic.setdefault(key, {})
+    dic[keys[-1]] = value
 
 def renderizar_modelo_con_instancia(campos_modelo, texto_modelo, instancia):
     context = {}
     for campo in campos_modelo:
         try:
             valor = eval(f"instancia.{campo}")
-            context[campo] = valor
-        except Exception:
-            context[campo] = ""
+            if isinstance(valor, datetime):
+                # Formato: Domingo 2 de Junio de 2025
+                valor = valor.strftime('%A %d de %B de %Y')
+            keys = campo.split(".")
+            set_nested_value(context, keys, valor)
+        except Exception as e:
+            # También podemos setear vacío si queremos evitar errores por campos inexistentes
+            keys = campo.split(".")
+            set_nested_value(context, keys, "")
     template = Template(texto_modelo)
     return template.render(**context)

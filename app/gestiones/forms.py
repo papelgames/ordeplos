@@ -25,8 +25,10 @@ class AltaGestionesPersonasForm(AltaGestionesForm):
     descripcion_nombre = StringField("Nombre/Razón Social", validators=[DataRequired('Debe cargar el nombre o la razón social' )])
     genero = SelectField('Genero', choices =[( '','Seleccionar genero'),( "M",'Masculino'),( "F",'Femenino'),( "X",'No Binario'),( "E",'Empresa/Persona Jurídica' )], coerce = str, default = None, validators=[DataRequired('Seleccione genero')])
     tipo_persona = SelectField('Tipo de persona', choices =[( '','Seleccionar tipo de persona'),( "fisica",'Persona Física'),( "juridica",'Persona Jurídica')], coerce = str, default = None, validators=[DataRequired('Seleccione tipo de persona')])
-    correo_electronico = StringField('Correo electrónico', validators=[Email(), validar_correo])
+    correo_electronico = StringField('Correo electrónico', validators=[Optional(),Email('Debe cargar un correo valido'), validar_correo])
     telefono = StringField('Telefono') 
+    direccion = StringField('Dirección', validators=[DataRequired('Debe cargar dirección' )])
+    localidad = StringField('Localidad', validators=[DataRequired('Debe cargar la localidad' )])
     dni = StringField('DNI', validators=[required_conditional_dni, Length(max=8)])
     cuit = StringField('CUIT', validators=[required_conditional_cuit, Length(max=11), validar_cuit_guardado, validar_cuit])
 

@@ -32,7 +32,9 @@ class Personas (Base):
     genero = db.Column(db.String(9))
     fecha_nacimiento = db.Column(db.DateTime)
     tipo_persona = db.Column(db.String(50))
-    id_estado = db.Column(db.Integer, db.ForeignKey('estados.id')) 
+    id_estado = db.Column(db.Integer, db.ForeignKey('estados.id'))
+    direccion = db.Column(db.String(256))
+    id_localidad = db.Column(db.Integer, db.ForeignKey('localidades.id'))
     nota = db.Column(db.String(256))
     usuario_alta = db.Column(db.String(256))
     usuario_modificacion = db.Column(db.String(256))
@@ -43,6 +45,7 @@ class Personas (Base):
     def save(self):
         if not self.id:
             db.session.add(self)
+        db.session.flush()
         db.session.commit()
 
     @staticmethod
@@ -507,4 +510,27 @@ class VariablesDocumentos (Base):
     def get_variables():
         resultados = db.session.query(VariablesDocumentos.nombre_variable).all()
         return [r[0] for r in resultados]
-        
+
+class Localidades (Base):
+    __tablename__ = "localidades"
+    localidad = db.Column(db.String(256))
+    provincia = db.Column(db.String(256))
+    personas = db.relationship('Personas', backref='localidades', uselist=True)
+
+    @staticmethod
+    def get_by_id(id):
+        return Localidades.query.get(id)
+    
+    @staticmethod
+    def get_all():
+        return Localidades.query.all()
+    
+    @staticmethod
+    def get_provinvia_like_descripcion(descripcion):
+        descripcion = f"%{descripcion}%"
+        return db.session.query(Localidades).filter(Localidades.provincia.contains(descripcion)).first()
+    
+    @staticmethod
+    def get_localidad_like_descripcion(descripcion):
+        descripcion = f"%{descripcion}%"
+        return db.session.query(Localidades).filter(Localidades.localidad.contains(descripcion)).first()
