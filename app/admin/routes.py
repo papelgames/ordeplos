@@ -215,6 +215,7 @@ def alta_persona():
     if form.validate_on_submit():
         descripcion_nombre = form.descripcion_nombre.data
         correo_electronico = form.correo_electronico.data
+        fecha_nacimiento =form.fecha_nacimiento.data
         telefono = form.telefono.data
         cuit = form.cuit.data
         tipo_persona = form.tipo_persona.data 
@@ -226,6 +227,7 @@ def alta_persona():
 
         persona = Personas(descripcion_nombre= descripcion_nombre,
                            correo_electronico = correo_electronico,
+                           fecha_nacimiento = fecha_nacimiento,
                            telefono = telefono,
                            dni = cuit[2:10],
                            cuit = cuit, 

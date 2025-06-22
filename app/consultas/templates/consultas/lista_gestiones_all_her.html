@@ -1,0 +1,24 @@
+{% extends "consultas/lista_gestiones.html" %}
+<!-- heredo desde el template lista_gestiones.html para poder usar el navegador de paginas con distintos parametros  -->
+
+{% block navpag %}
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+
+            {%- for page in gestiones.iter_pages() %}
+                {% if page %}
+                    {% if page != gestiones.page %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('consultas.lista_gestiones', page=page) }}">{{ page }}</a>
+                    {% else %}
+                        <li class="page-item active">
+                            <span class="page-link">
+                                {{ page }}
+                                <span class="sr-only"></span>
+                            </span>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            {%- endfor %}
+        </ul>
+    </nav>
+{% endblock %}

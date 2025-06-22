@@ -48,15 +48,13 @@ def consulta_personas():
 @not_initial_status
 def lista_gestiones():
     criterio = request.args.get('criterio','')
-
+    cuit = request.args.get('cuit','')
     form = BusquedaForm()
     
     page = int(request.args.get('page', 1))
     per_page = current_app.config['ITEMS_PER_PAGE']
     gestiones = Gestiones.get_all_paginated(page, per_page)
 
-    cuit_cliente = request.args.get('cuit','')
-    
     if len(gestiones.items) == 0:
             gestiones =[]
 
@@ -64,23 +62,28 @@ def lista_gestiones():
         buscar = form.buscar.data
         return redirect(url_for("consultas.lista_gestiones", criterio = buscar))
     
-    if criterio.isdigit() == True:
-        gestiones = Gestiones.get_by_id(criterio)
-    elif cuit_cliente:
-        id_cliente = Personas.get_by_cuit(cuit_cliente)
-        gestiones = Gestiones.get_gestiones_by_id_cliente_all_paginated(id_cliente.id)
+    if criterio:
+        if criterio.isdigit():
+            gestiones = Gestiones.get_by_id(criterio)
+            return render_template("consultas/lista_gestiones.html", form = form, criterio = criterio, gestiones = gestiones )
+        else :
+            gestiones = Gestiones.get_like_descripcion_all_paginated(criterio, page, per_page)
+            if len(gestiones.items) == 0:
+                gestiones =[]
+            return render_template("consultas/lista_gestiones_criterio.html", form = form, criterio = criterio, gestiones = gestiones )
+    
+    if cuit: 
+        id_cliente = Personas.get_by_cuit(cuit)
+        gestiones = Gestiones.get_gestiones_by_id_cliente_all_paginated(id_cliente.id, page, per_page)
         if len(gestiones.items) == 0:
             gestiones =[]
-
-    elif criterio == "":
-        pass
+        return render_template("consultas/lista_gestiones_cuit_her.html", form=form, gestiones=gestiones, cuit=cuit)
     else:
         gestiones = Gestiones.get_like_descripcion_all_paginated(criterio, page, per_page)
         if len(gestiones.items) == 0:
             gestiones =[]
-    
-    return render_template("consultas/lista_gestiones.html", form = form, criterio = criterio, gestiones = gestiones )
-
+        
+        return render_template("consultas/lista_gestiones_all_her.html", form=form, gestiones=gestiones)
 
 @consultas_bp.route("/consultas/cobro/")
 @login_required

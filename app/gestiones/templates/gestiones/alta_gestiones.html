@@ -15,6 +15,9 @@
             <div class="form-group">
                 {{ render_input(form.descripcion_nombre, '', id="descripcion_nombre", class="form-control", placeholder="Nombre y apellido", autocomplete="off" ) }}
             </div>
+            <div class="form-group">
+                {{ render_input(form.correo_electronico,'', id= "correo_electronico" , class="form-control", placeholder="Ingrese correo electronico del cliente" ) }}
+            </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -24,7 +27,7 @@
                         {{ render_input(form.tipo_persona,'', id= "tipo_persona" , class="form-control") }}
                     </div> 
                     <div class="form-group">
-                        {{ render_input(form.correo_electronico,'', id= "correo_electronico" , class="form-control", placeholder="Ingrese correo electronico del cliente" ) }}
+                        {{ render_input(form.fecha_nacimiento,'', id= "fecha_nacimiento" , class="form-control" ) }}
                     </div>
                     <div class="form-group">
                         {{ render_input(form.telefono, '', id="telefono",  class="form-control", placeholder="Ingrese el telefono") }}
@@ -35,7 +38,7 @@
                         {{ render_input(form.direccion, '', id="direccion",  class="form-control", placeholder="Ingrese el domicilio") }}
                     </div>
                     <div class="form-group">
-                        {{ render_input(form.localidad, '', id="localidad",  class="form-control", placeholder="Ingrese la localidad", list="lista_localidades", autocomplete="off") }}
+                        {{ render_input(form.id_localidad, '', id="id_localidad",  class="form-control", placeholder="Ingrese la localidad", list="lista_localidades", autocomplete="off") }}
                     </div>
                     <div class="form-group">
                         {{ render_input(form.dni,'', id= "dni" , class="form-control", placeholder="Ingrese el DNI") }}

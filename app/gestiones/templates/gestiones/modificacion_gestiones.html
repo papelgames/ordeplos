@@ -13,6 +13,9 @@
         <div class="form-group">
            Nombre: {{ gestion.personas.descripcion_nombre}}
         </div>
+        <div class="form-group">
+             Correo Electrónico: {{ gestion.personas.correo_electronico}}
+        </div>
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
@@ -22,14 +25,20 @@
                 Tipo de persona: {{gestion.personas.tipo_persona }}
                 </div> 
                 <div class="form-group">
-                 Correo Electrónico: {{ gestion.personas.correo_electronico}}
+                 Fecha de nacimiento: {{ gestion.personas.fecha_nacimiento}}
                 </div>
-            </div>
-            <div class="col-md-6">
-
                 <div class="form-group">
                    Telefono: {{ gestion.personas.telefono }}
                 </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                   Dirección: {{ gestion.personas.direccion }}
+                </div>
+                <div class="form-group">
+                   Localidad: {{ gestion.personas.localidades.localidad }}
+                </div>
+                
                 <div class="form-group">
                    DNI: {{ gestion.personas.dni}}
                 </div>

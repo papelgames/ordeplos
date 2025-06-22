@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import (StringField, SubmitField, TextAreaField, BooleanField, SelectField, HiddenField, IntegerField)
+from wtforms import (StringField, SubmitField, TextAreaField, BooleanField, SelectField, HiddenField, IntegerField, DateField)
 from wtforms.validators import DataRequired, Length,Email, NumberRange, Optional
 from app.common.controles import validar_correo, validar_cuit, validar_cuit_guardado
 
@@ -24,6 +24,7 @@ class DatosPersonasForm(FlaskForm):
     cuit = StringField('CUIT', validators=[DataRequired('Debe completar el numero de cuit'), Length(max=11), validar_cuit, validar_cuit_guardado])
     tipo_persona = SelectField('Tipo de persona', choices =[( '','Seleccionar acción'),( "fisica",'Persona Física'),( "juridica",'Persona Jurídica')], coerce = str, default = None, validators=[DataRequired('Seleccione tipo de persona')])
     genero = SelectField('Genero', choices =[( '','Seleccionar genero'),( "M",'Masculino'),( "F",'Femenino'),( "X",'No Binario'),( "E",'Empresa/Persona Jurídica' )], coerce = str, default = None, validators=[DataRequired('Seleccione genero')])
+    fecha_nacimiento  = DateField('Fecha cita')
     direccion = StringField('Dirección', validators=[DataRequired('Debe cargar dirección' )])
     id_localidad = StringField('Localidad', validators=[DataRequired('Debe cargar la localidad' )])
     nota = TextAreaField('Nota', validators=[Length(max=256)])

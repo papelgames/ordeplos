@@ -55,28 +55,9 @@
         {% endfor %}
     </tbody>
 </table>
+<!-- uso un block para transformar esta vista a un template par poder distintos parametros en el navegador -->
 
-<nav aria-label="Page navigation example">
-	<ul class="pagination justify-content-center">
-
-        {%- for page in gestiones.iter_pages() %}
-			{% if page %}
-
-				{% if page != gestiones.page %}
-					<li class="page-item"><a class="page-link" href="{{ url_for('consultas.lista_gestiones', criterio= criterio, page=page) }}">{{ page }}</a>
-				{% else %}
-					<li class="page-item active">
-						<span class="page-link">
-							{{ page }}
-							<span class="sr-only">(current)</span>
-						</span>
-					</li>
-                {% endif %}
-			{% endif %}
-		{%- endfor %}
-	</ul>
-</nav>
-
+{% block navpag %}{% endblock %}
 
 {% elif gestiones %}
 

@@ -66,6 +66,10 @@ def alta_gestiones():
             form.fecha_cita.data = date.today()
         if not form.fecha_inicio_gestion.data:
             form.fecha_inicio_gestion.data = date.today()
+        if persona:
+            id_localidad_original=Localidades.get_by_id(persona.id_localidad)
+            if id_localidad_original:
+                form.id_localidad.data = f"{id_localidad_original.id} | {id_localidad_original.localidad} | {id_localidad_original.provincia}"
 
     if not id_cliente:
         con_persona = False
@@ -74,11 +78,12 @@ def alta_gestiones():
             genero = form.genero.data
             tipo_persona = form.tipo_persona.data
             correo_electronico = form.correo_electronico.data
+            fecha_nacimiento = form.fecha_nacimiento.data
             telefono = form.telefono.data
             dni = form.dni.data
             cuit = form.cuit.data
             direccion = form.direccion.data
-            localidad = form.localidad.data.split('|')
+            id_localidad = form.id_localidad.data.split('|')
             origen = form.origen.data
             fecha_inicio_gestion = form.fecha_inicio_gestion.data
             id_tipo_gestion = form.id_tipo_gestion.data
@@ -94,12 +99,13 @@ def alta_gestiones():
             nuevo_cliente = Personas(descripcion_nombre=descripcion_nombre,
                                     genero = genero,
                                     tipo_persona=tipo_persona,
+                                    fecha_nacimiento=fecha_nacimiento,
                                     correo_electronico=correo_electronico,
                                     telefono=telefono,
                                     dni=dni,
                                     cuit=cuit,
                                     direccion=direccion,
-                                    id_localidad=localidad[0])
+                                    id_localidad=id_localidad[0])
 
             nueva_gestion = Gestiones(origen = origen,
                                     fecha_inicio_gestion = fecha_inicio_gestion,
@@ -136,6 +142,7 @@ def alta_gestiones():
         con_persona = True
         if form.validate_on_submit():
             form.populate_obj(persona)
+            id_localidad = form.id_localidad.data.split('|')
             origen = form.origen.data
             fecha_inicio_gestion = form.fecha_inicio_gestion.data
             id_tipo_gestion = form.id_tipo_gestion.data
@@ -155,7 +162,7 @@ def alta_gestiones():
                 usuario_alta = current_user.username
 
             )
-
+            persona.id_localidad=id_localidad[0]
             if observacion:
                 nueva_gestion.observaciones.append(observacion_gestion)
             
@@ -165,6 +172,7 @@ def alta_gestiones():
                                                         usuario_alta = current_user.username,
                                                         )
                 nueva_gestion.gestiones_de_tareas.append(nueva_gestion_de_tarea)
+            
             persona.titular_gestion.append(nueva_gestion)
             persona.save()
 
@@ -404,7 +412,6 @@ def modificacion_gestiones():
     if not id_gestion:
         return redirect(url_for('gestiones.gestiones'))
     gestion = Gestiones.get_by_id(id_gestion)
-    print (gestion.personas.localidades.localidad)
     form = AltaGestionesForm(obj=gestion)                                                                                                                   
     clientes = Personas.get_all()
     form.id_tipo_gestion.choices = tipo_gestion_select()
